@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "drift-report-plugin.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ include "drift-report-plugin.name" . }}
+    chart: {{ include "drift-report-plugin.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+{{- if .Values.global.tolerations }}  
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
+{{- end }} 
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "drift-report-plugin.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        app: {{ include "drift-report-plugin.name" . }}
+        release: {{ .Release.Name }}
+        logging: "true"
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: GRPC_VERBOSITY
+              value: "DEBUG"
+            # - name: GRPC_TRACE
+            #   value: "all,-timer_check"
+            - name: ENDPOINT_OVERRIDE
+            {{- if .Values.global.persistence.url }}
+              value: "{{ .Values.global.persistence.url }}"
+            {{- else }}
+              value: "http://{{ template "minio.fullname" . }}:9000"
+            {{- end }}
+            - name: HTTP_PORT
+              value: "5000"
+            - name: MANAGER_ADDR
+              value: "{{ template "manager.fullname" . }}:8081"
+            - name: SELF_ADDR
+              value: "http://{{ template "drift-report-plugin.fullname" . }}:5000"
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "minio.fullname" . }}
+                  key: root-user
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "minio.fullname" . }}
+                  key: root-password
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          livenessProbe:
+            initialDelaySeconds: 20
+            httpGet:
+              path: /api/health
+              port: http
+          readinessProbe:
+            initialDelaySeconds: 20
+            httpGet:
+              path: /api/health
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

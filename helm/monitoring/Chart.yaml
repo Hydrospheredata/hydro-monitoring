@@ -1,0 +1,38 @@
+apiVersion: v2
+name: monitoring
+description: Hydro-monitoring is a cluster for monitoring your machine learning models in production
+type: application
+version: 0.1.0
+appVersion: 0.0.1
+keywords:
+  - hydrosphere
+  - hydro-monitoring
+  - monitoring
+  - mlops
+  - ml
+  - machine learning
+  - explainability
+  - explaining
+home: https://hydrosphere.io/
+sources:
+  - https://github.com/Hydrospheredata/hydro-monitoring
+maintainers:
+  - name: hydrospheredata
+    email: info@hydrosphere.io
+    url: https://hydrosphere.io
+dependencies:
+  - name: postgresql
+    repository: file://../postgresql
+    version: "~10.13.9"
+  - name: minio
+    repository: file://../minio
+    version: "~9.2.1"
+  - name: manager
+    repository: file://../manager
+    version: "~0.1.0"
+  - name: drift-report-plugin
+    repository: file://../drift-report-plugin
+    version: "~0.1.0"
+  - name: shell-ui
+    repository: file://../shell-ui
+    version: "~0.1.0"

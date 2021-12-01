@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "manager.fullname" . }}
+  labels:
+    {{- include "manager.labels" . | nindent 4 }}
+spec:
+{{- if .Values.global.tolerations }}  
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
+{{- end }} 
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "manager.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "manager.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      # serviceAccountName: {{ include "manager.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: ["-Dconfig.file=/app/config/k8s.conf", "-Dcom.sun.management.jmxremote.port=5555", "-Dcom.sun.management.jmxremote.rmi.port=5555", "-Djava.rmi.server.hostname=localhost", "-Dcom.sun.management.jmxremote.authenticate=false", "-Dcom.sun.management.jmxremote.ssl=false"]
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.http_port }}
+              protocol: TCP
+            - name: grpc
+              containerPort: {{ .Values.service.grpc_port }}
+              protocol: TCP
+          env: 
+            - name: AWS_REGION
+              value: "us-west-1"
+            - name: HOST
+              value: {{ template "manager.fullname" . }}
+            - name: MINIO_HOST
+              value: {{ template "minio.fullname" . }}
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "minio.fullname" . }}
+                  key: root-user
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "minio.fullname" . }}
+                  key: root-password
+            - name: DATABASE_HOST
+              value: {{ if .Values.global.postgresql.url }}"{{ .Values.global.postgresql.url }}"{{ else }}"{{ template "postgresql.fullname" . }}" {{ end }}
+            - name: DATABASE_NAME
+              value: "{{ .Values.global.postgresql.postgresqlDatabase }}"
+            - name: DATABASE_USERNAME
+              value: "{{ .Values.global.postgresql.postgresqlUsername }}"
+            - name: DATABASE_PORT
+              value: "{{ .Values.global.postgresql.servicePort }}"
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "postgresql.fullname" . }}
+                  key: postgresql-password
+          volumeMounts:
+            - name: {{ template "manager.fullname" . }}-config
+              mountPath: "/app/config/"
+              readOnly: true
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: {{ template "manager.fullname" . }}-config
+          configMap:
+            name: {{ template "manager.fullname" . }}-config
+            items:
+              - key: k8s.conf
+                path: k8s.conf

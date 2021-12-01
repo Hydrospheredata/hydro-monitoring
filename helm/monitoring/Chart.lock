@@ -1,0 +1,18 @@
+dependencies:
+- name: postgresql
+  repository: file://../postgresql
+  version: 10.13.10
+- name: minio
+  repository: file://../minio
+  version: 9.2.1
+- name: manager
+  repository: file://../manager
+  version: 0.1.0
+- name: drift-report-plugin
+  repository: file://../drift-report-plugin
+  version: 0.1.0
+- name: shell-ui
+  repository: file://../shell-ui
+  version: 0.1.0
+digest: sha256:17f3992ad47a7dd9c5e6181bf7a72b74b65a6d73a2d2bab90fa29581ba0282cd
+generated: "2021-12-01T13:37:53.312527+03:00"

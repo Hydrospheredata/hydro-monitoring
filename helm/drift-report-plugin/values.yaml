@@ -1,0 +1,38 @@
+# Default values for drift-report-plugin.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: hydrosphere/drift-report-plugin
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 5000
+
+serviceAccount:
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+global:
+  tolerations: []
+
+podSecurityContext:
+  runAsUser: 42069
+
+securityContext:
+  allowPrivilegeEscalation: false
+
+podAnnotations: {}
+
+resources: {}
+
+nodeSelector: {}
+
+affinity: {}

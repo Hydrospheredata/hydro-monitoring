@@ -1,0 +1,16 @@
+apiVersion: v2
+description: A helm chart for the hydro-monitoring user interface
+name: shell-ui
+version: 0.1.0
+appVersion: 0.0.1
+type: application
+keywords:
+  - hydrosphere
+  - hydro-monitoring
+home: https://hydrosphere.io/
+sources: 
+  - https://github.com/Hydrospheredata/hydroserving-shell-ui
+maintainers:
+  - name: hydrospheredata
+    email: support@hydrosphere.io
+    url: https://hydrosphere.io

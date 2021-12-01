@@ -1,0 +1,16 @@
+apiVersion: v2
+description: A helm chart for the service which manages plugins for the entire system
+name: manager
+version: 0.1.0
+appVersion: 0.0.1
+type: application
+keywords:
+  - hydrosphere
+  - hydro-monitoring
+home: https://hydrosphere.io/
+sources:
+  - https://github.com/Hydrospheredata/monitoring-manager
+maintainers:
+  - name: hydrospheredata
+    email: support@hydrosphere.io
+    url: https://hydrosphere.io
