@@ -26,7 +26,6 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      # serviceAccountName: {{ include "manager.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -35,7 +34,13 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          args: ["-Dconfig.file=/app/config/k8s.conf", "-Dcom.sun.management.jmxremote.port=5555", "-Dcom.sun.management.jmxremote.rmi.port=5555", "-Djava.rmi.server.hostname=localhost", "-Dcom.sun.management.jmxremote.authenticate=false", "-Dcom.sun.management.jmxremote.ssl=false"]
+          args:
+            - "-Dconfig.file=/etc/manager/k8s.conf"
+            - "-Dcom.sun.management.jmxremote.port=5555"
+            - "-Dcom.sun.management.jmxremote.rmi.port=5555"
+            - "-Djava.rmi.server.hostname=localhost"
+            - "-Dcom.sun.management.jmxremote.authenticate=false"
+            - "-Dcom.sun.management.jmxremote.ssl=false"
           ports:
             - name: http
               containerPort: {{ .Values.service.http_port }}
@@ -73,9 +78,23 @@ spec:
                 secretKeyRef:
                   name: {{ template "postgresql.fullname" . }}
                   key: postgresql-password
+          readinessProbe:
+            exec:
+              command:
+              - "grpc_health_probe"
+              - "-addr"
+              - ":{{ .Values.service.grpc_port }}"
+            initialDelaySeconds: 10
+          livenessProbe:
+            exec:
+              command:
+              - "grpc_health_probe"
+              - "-addr"
+              - ":{{ .Values.service.grpc_port }}"
+            initialDelaySeconds: 20
           volumeMounts:
             - name: {{ template "manager.fullname" . }}-config
-              mountPath: "/app/config/"
+              mountPath: "/etc/manager/"
               readOnly: true
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
