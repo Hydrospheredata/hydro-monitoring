@@ -32,6 +32,7 @@ global:
     service:
       http_port: 8080
       grpc_port: 8081
+
   tolerations: []
 
 manager:

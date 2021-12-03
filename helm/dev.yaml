@@ -1,0 +1,16 @@
+global:
+  ui:
+    ingress:
+      enabled: true
+      host: "hydro-monitoring.dev.hydrosphere.io"
+  
+  persistence:
+    url: ""
+    mode: "minio"
+    region: "us-west-1" # region for s3
+  
+  tolerations:
+    - key: "node-type"
+      operator: "Equal"
+      value: "demo"
+      effect: "NoSchedule"
