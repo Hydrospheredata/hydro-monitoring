@@ -11,7 +11,8 @@ global:
                                  # cluster.
   manager:
     service:
-      http_port: 8080
+      ports:
+        http: 8080
   
   tolerations: []
 

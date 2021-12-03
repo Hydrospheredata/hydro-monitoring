@@ -15,6 +15,12 @@ global:
       ports:
         http: 8080
         grpc: 8081
+  
+  persistence:
+    url: "" # Endpoint for the object storage. Compatible with S3 or Minio.
+    service:
+      ports:
+        api: 9000
 
   tolerations: []
 
