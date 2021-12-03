@@ -43,6 +43,8 @@ spec:
               value: {{ template "manager.fullname" . }}
             - name: MANAGER_HTTP_PORT
               value: "{{ .Values.global.manager.service.ports.http }}"
+            - name: INGRESS_PATH
+              value: {{ if .Values.global.ui.ingress.enabled }}'//{{ .Values.global.ui.ingress.host }}{{ trimSuffix "/" .Values.global.ui.ingress.path }}/'{{else}}'/'{{end}}
           ports:
             - name: http
               containerPort: 8080
