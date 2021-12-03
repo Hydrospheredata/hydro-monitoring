@@ -16,7 +16,12 @@ global:
       host: "hydrosphere-minio.local"
     accessKey: "ACCESSKEYEXAMPLE" # accesskeyid for s3 or minio
     secretKey: "SECRETKEYEXAMPLE" # secretkeyid for s3 or minio
-    #region: "us-west-1" # region for s3
+    region: "us-west-1" # region for s3
+    service:
+      type: ClusterIP
+      ports:
+        api: 9000
+        console: 9001
   tolerations: []
 
 ## @section Common parameters

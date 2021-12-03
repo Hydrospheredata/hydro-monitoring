@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "shell-ui.fullname" . }}
+  name: {{ include "profiler.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: {{ include "shell-ui.name" . }}
-    chart: {{ include "shell-ui.chart" . }}
+    app: {{ include "profiler.name" . }}
+    chart: {{ include "profiler.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "shell-ui.name" . }}
+      app: {{ include "profiler.name" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
@@ -21,8 +21,7 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       labels:
-        logType: "nginx"
-        app: {{ include "shell-ui.name" . }}
+        app: {{ include "profiler.name" . }}
         release: {{ .Release.Name }}
         logging: "true"
     spec:
@@ -39,21 +38,39 @@ spec:
           image: "{{ .Values.image.full }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            - name: MANAGER_HOST
-              value: {{ template "manager.fullname" . }}
-            - name: MANAGER_HTTP_PORT
-              value: "{{ .Values.global.manager.service.ports.http }}"
+            - name: MINIO_ENDPOINT
+            {{- if .Values.global.persistence.url }}
+              value: "{{ .Values.global.persistence.url }}"
+            {{- else }}
+              value: "http://{{ template "minio.fullname" . }}:{{ .Values.global.persistence.service.ports.api }}"
+            {{- end }}
+            - name: HTTP_HOST
+              value: "{{ template "profiler.fullname" . }}"
+            - name: HTTP_PORT
+              value: "5001"
+            - name: MANAGER_ADDR
+              value: "{{ template "manager.fullname" . }}:{{ .Values.global.manager.service.ports.grpc }}"
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "minio.fullname" . }}
+                  key: root-user
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "minio.fullname" . }}
+                  key: root-password
           ports:
             - name: http
-              containerPort: 8080
+              containerPort: 5001
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
+              path: /health
               port: http
           readinessProbe:
             httpGet:
-              path: /
+              path: /health
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

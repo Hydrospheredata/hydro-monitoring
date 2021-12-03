@@ -1,18 +1,17 @@
 apiVersion: v2
-name: drift-report-plugin
-description: A Helm chart for drift-report-plugin
+name: profiler
+description: A Helm chart for profiler plugin
 type: application
 version: 0.1.0
 appVersion: 1.16.0
 keywords:
   - hydrosphere
   - hydro-monitoring
-  - drift-report
+  - outlier-detection
 home: https://hydrosphere.io/
 sources:
-  - https://github.com/Hydrospheredata/drift-report-plugin
+  - https://github.com/Hydrospheredata/hydro-profiler
 maintainers:
   - name: hydrospheredata
     email: support@hydrosphere.io
     url: https://hydrosphere.io
-

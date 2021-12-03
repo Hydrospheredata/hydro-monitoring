@@ -1,41 +1,45 @@
-{{- if .Values.ingress.enabled -}}
-{{- $fullName := include "shell-ui.fullname" . -}}
-{{- $svcPort := .Values.service.port -}}
+{{- if .Values.global.ui.ingress.enabled }}
 {{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 {{- else -}}
-apiVersion: extensions/v1beta1
+apiVersion: extensions/v1
 {{- end }}
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
+  name: "{{ include "shell-ui.fullname" . }}"
+  namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "shell-ui.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
+    app: "{{ include "shell-ui.name" . }}"
+    chart: "{{ include "shell-ui.chart" . }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
   annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
-spec:
-  {{- if .Values.ingress.tls }}
-  tls:
-    {{- range .Values.ingress.tls }}
-    - hosts:
-        {{- range .hosts }}
-        - {{ . | quote }}
-        {{- end }}
-      secretName: {{ .secretName }}
+    cert-manager.io/cluster-issuer: {{ .Values.global.ui.ingress.issuer | quote }}
+    kubernetes.io/ingress.class: "nginx"
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/client-max-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+    nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+    {{- if ne .Values.global.ui.ingress.path "/"}}
+    nginx.ingress.kubernetes.io/rewrite-target: "/$2"
     {{- end }}
-  {{- end }}
+spec:
   rules:
-    {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
+    - host: {{ .Values.global.ui.ingress.host }}
       http:
         paths:
-          {{- range .paths }}
-          - path: {{ . }}
+          - path: {{ .Values.global.ui.ingress.path }}
+            pathType: Prefix
             backend:
-              serviceName: {{ $fullName }}
-              servicePort: {{ $svcPort }}
-          {{- end }}
-    {{- end }}
-  {{- end }}
+              service:
+                name: {{ template "shell-ui.fullname" . }}
+                port:
+                  number: {{ .Values.service.port }}
+  tls:
+  - hosts:
+    - {{ .Values.global.ui.ingress.host }}
+    secretName: "{{ .Release.Name }}-ui-tls"
+{{- end }}

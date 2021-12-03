@@ -1,4 +1,4 @@
-apiVersion: policy/v1beta1
+apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: {{ include "drift-report-plugin.fullname" . }}
@@ -6,5 +6,5 @@ spec:
   minAvailable: 1
   selector:
     matchLabels:
-      app: {{ include "manager.name" . }}
+      app: {{ include "drift-report-plugin.name" . }}
       release: {{ .Release.Name }}

@@ -9,10 +9,6 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-{{- if .Values.global.tolerations }}  
-      tolerations:
-{{ toYaml .Values.global.tolerations | indent 8 }}
-{{- end }} 
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
@@ -29,35 +25,35 @@ spec:
         release: {{ .Release.Name }}
         logging: "true"
     spec:
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+{{- if .Values.global.tolerations }}  
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
+{{- end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.full }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            - name: GRPC_VERBOSITY
-              value: "DEBUG"
+            # - name: GRPC_VERBOSITY
+            #   value: "DEBUG"
             # - name: GRPC_TRACE
             #   value: "all,-timer_check"
+            - name: HTTP_PORT
+              value: "5000"
+            - name: SELF_ADDR
+              value: "http://{{ template "drift-report-plugin.fullname" . }}:{{ .Values.service.port }}"
+            - name: MANAGER_ADDR
+              value: "{{ template "manager.fullname" . }}:{{ .Values.global.manager.service.ports.grpc }}"
             - name: ENDPOINT_OVERRIDE
             {{- if .Values.global.persistence.url }}
               value: "{{ .Values.global.persistence.url }}"
             {{- else }}
-              value: "http://{{ template "minio.fullname" . }}:9000"
+              value: "http://{{ template "minio.fullname" . }}:{{ .Values.global.persistence.service.ports.api }}"
             {{- end }}
-            - name: HTTP_PORT
-              value: "5000"
-            - name: MANAGER_ADDR
-              value: "{{ template "manager.fullname" . }}:8081"
-            - name: SELF_ADDR
-              value: "http://{{ template "drift-report-plugin.fullname" . }}:5000"
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:

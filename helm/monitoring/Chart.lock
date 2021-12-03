@@ -14,5 +14,8 @@ dependencies:
 - name: shell-ui
   repository: file://../shell-ui
   version: 0.1.0
-digest: sha256:17f3992ad47a7dd9c5e6181bf7a72b74b65a6d73a2d2bab90fa29581ba0282cd
-generated: "2021-12-01T13:37:53.312527+03:00"
+- name: profiler
+  repository: file://../profiler
+  version: 0.1.0
+digest: sha256:431800adf2d921cf5bccef3f7a42e519521dabcd00e61ff5f3a698478078ad5a
+generated: "2021-12-03T11:28:43.011665+03:00"

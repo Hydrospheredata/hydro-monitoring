@@ -1,9 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "manager.fullname" . }}
+  name: {{ template "manager.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "manager.labels" . | nindent 4 }}
+    app: {{ template "manager.fullname" . }}
+    chart: {{ template "manager.fullname" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
 {{- if .Values.global.tolerations }}  
       tolerations:
@@ -12,7 +16,8 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "manager.selectorLabels" . | nindent 6 }}
+      app: {{ template "manager.name" . }}
+      release: {{ .Release.Name }}
   template:
     metadata:
     {{- with .Values.podAnnotations }}
@@ -20,7 +25,10 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       labels:
-        {{- include "manager.selectorLabels" . | nindent 8 }}
+        logType: "scala"
+        app: {{ template "manager.name" . }}
+        release: {{ .Release.Name }}
+        logging: "true"
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -32,7 +40,7 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.full }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
             - "-Dconfig.file=/etc/manager/k8s.conf"
@@ -43,18 +51,24 @@ spec:
             - "-Dcom.sun.management.jmxremote.ssl=false"
           ports:
             - name: http
-              containerPort: {{ .Values.service.http_port }}
+              containerPort: {{ .Values.containerPorts.http }}
               protocol: TCP
             - name: grpc
-              containerPort: {{ .Values.service.grpc_port }}
+              containerPort: {{ .Values.containerPorts.grpc }}
               protocol: TCP
           env: 
             - name: AWS_REGION
               value: "us-west-1"
             - name: HOST
               value: {{ template "manager.fullname" . }}
+            - name: HTTP_PORT
+              value: "{{ .Values.global.manager.service.ports.http }}"
+            - name: GRPC_PORT
+              value: "{{ .Values.global.manager.service.ports.grpc }}"
             - name: MINIO_HOST
               value: {{ template "minio.fullname" . }}
+            - name: MINIO_PORT
+              value: "{{ .Values.global.persistence.service.ports.api }}"
             - name: MINIO_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
@@ -83,14 +97,14 @@ spec:
               command:
               - "grpc_health_probe"
               - "-addr"
-              - ":{{ .Values.service.grpc_port }}"
+              - ":{{ .Values.global.manager.service.ports.grpc }}"
             initialDelaySeconds: 10
           livenessProbe:
             exec:
               command:
               - "grpc_health_probe"
               - "-addr"
-              - ":{{ .Values.service.grpc_port }}"
+              - ":{{ .Values.global.manager.service.ports.grpc }}"
             initialDelaySeconds: 20
           volumeMounts:
             - name: {{ template "manager.fullname" . }}-config

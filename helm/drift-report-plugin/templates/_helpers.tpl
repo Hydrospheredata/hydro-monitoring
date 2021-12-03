@@ -51,17 +51,6 @@ app.kubernetes.io/name: {{ include "drift-report-plugin.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
-{{/*
-Create the name of the service account to use
-*/}}
-{{- define "drift-report-plugin.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "drift-report-plugin.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.serviceAccount.name }}
-{{- end }}
-{{- end }}
-
 {{- define "minio.fullname" -}}
 {{- printf "%s-%s" .Release.Name "minio" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
