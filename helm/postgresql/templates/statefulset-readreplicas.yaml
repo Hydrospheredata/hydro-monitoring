@@ -45,6 +45,9 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+{{- if .Values.global.tolerations }}  
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
       {{- if .Values.schedulerName }}
       schedulerName: "{{ .Values.schedulerName }}"
       {{- end }}
@@ -59,9 +62,6 @@ spec:
       {{- end }}
       {{- if .Values.readReplicas.nodeSelector }}
       nodeSelector: {{- include "common.tplvalues.render" (dict "value" .Values.readReplicas.nodeSelector "context" $) | nindent 8 }}
-      {{- end }}
-      {{- if .Values.readReplicas.tolerations }}
-      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.readReplicas.tolerations "context" $) | nindent 8 }}
       {{- end }}
       {{- if .Values.readReplicas.topologySpreadConstraints }}
       topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.readReplicas.topologySpreadConstraints "context" $) | nindent 8 }}

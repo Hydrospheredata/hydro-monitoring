@@ -47,6 +47,9 @@ spec:
       annotations: {{- toYaml . | nindent 8 }}
       {{- end }}
     spec:
+{{- if .Values.global.tolerations }}  
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
       {{- if .Values.schedulerName }}
       schedulerName: "{{ .Values.schedulerName }}"
       {{- end }}
@@ -61,9 +64,6 @@ spec:
       {{- end }}
       {{- if .Values.primary.nodeSelector }}
       nodeSelector: {{- include "common.tplvalues.render" (dict "value" .Values.primary.nodeSelector "context" $) | nindent 8 }}
-      {{- end }}
-      {{- if .Values.primary.tolerations }}
-      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.primary.tolerations "context" $) | nindent 8 }}
       {{- end }}
       {{- if .Values.terminationGracePeriodSeconds }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
