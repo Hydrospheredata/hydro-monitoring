@@ -66,9 +66,7 @@ spec:
             - name: GRPC_PORT
               value: "{{ .Values.global.manager.service.ports.grpc }}"
             - name: MINIO_HOST
-              value: {{ template "minio.fullname" . }}
-            - name: MINIO_PORT
-              value: "{{ .Values.global.persistence.service.ports.api }}"
+              value: "http://{{ template "minio.fullname" . }}:{{ .Values.global.persistence.service.ports.api }}"
             - name: MINIO_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
