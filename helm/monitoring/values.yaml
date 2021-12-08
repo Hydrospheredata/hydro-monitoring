@@ -1,7 +1,7 @@
 global:
   ui: 
     ingress:
-      enabled: true
+      enabled: false
       host: "hydromonitoring.local" # Domain name for the frontend ingress.
       path: "/" # Path, which will match the service.
       issuer: "letsencrypt-prod" # A name of the cert-manager issuer name, configured within the 
@@ -42,6 +42,10 @@ manager:
 drift-report-plugin:
   image: 
     full: hydrosphere/drift-report-plugin:latest
+
+profiler:
+  image: 
+    full: hydrosphere/profiler:latest
 
 shell-ui:
   image: 

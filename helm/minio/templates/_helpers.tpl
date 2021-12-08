@@ -124,7 +124,7 @@ Return true if a secret object should be created
 Return true if a PVC object should be created (only in standalone mode)
 */}}
 {{- define "minio.createPVC" -}}
-{{- if and (eq .Values.global.persistence.mode "minio") (or (eq .Values.global.persistence.mode "s3")) }}
+{{- if and .Values.persistence.enabled (not .Values.persistence.existingClaim) (or (and (eq .Values.mode "standalone") (not .Values.gateway.enabled)) (and .Values.gateway.enabled (eq .Values.gateway.type "nas"))) }}
     {{- true -}}
 {{- end -}}
 {{- end -}}
@@ -162,6 +162,17 @@ Ref: https://cert-manager.io/docs/usage/ingress/#supported-annotations
     {{- true -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+ Return the appropriate apiVersion for ingress.
+ */}}
+ {{- define "minio.ingress.apiVersion" -}}
+ {{- if .Capabilities.APIVersions.Has "extensions/v1beta1" -}}
+ {{- print "extensions/v1beta1" -}}
+ {{- else -}}
+ {{- print "networking.k8s.io/v1beta1" -}}
+ {{- end -}}
+ {{- end -}}
 
 {{/*
 Compile all warnings into a single message, and call fail.

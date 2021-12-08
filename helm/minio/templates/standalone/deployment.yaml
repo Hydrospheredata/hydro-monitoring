@@ -1,4 +1,4 @@
-{{- if and (eq .Values.mode "standalone") (not .Values.gateway.enabled) (eq .Values.global.persistence.url "") (eq .Values.global.persistence.mode "minio") }}
+{{- if and (eq .Values.mode "standalone") (not .Values.gateway.enabled) }}
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:

@@ -65,3 +65,22 @@ Create the name of the service account to use
 {{- define "manager.fullname" -}}
 {{- printf "%s-%s" .Release.Name "manager" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{- define "shell-ui.ingress-http-path" -}}
+{{- if eq .Values.global.ui.ingress.path "/" -}}
+{{- print "/" -}}
+{{- else -}}
+{{- printf "%s(/|$)(.*)" .Values.global.ui.ingress.path}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the appropriate apiVersion for ingress.
+*/}}
+{{- define "shell-ui.ingress.apiVersion" -}}
+{{- if .Capabilities.APIVersions.Has "extensions/v1beta1" -}}
+{{- print "extensions/v1beta1" -}}
+{{- else -}}
+{{- print "networking.k8s.io/v1beta1" -}}
+{{- end -}}
+{{- end -}}

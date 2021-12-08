@@ -7,7 +7,7 @@ global:
   persistence:
     url: ""
     mode: "minio"
-    region: "us-west-1" # region for s3
+    region: "us-west-2" # region for s3
   
   tolerations:
     - key: "node-type"

@@ -1,9 +1,5 @@
 {{- if .Values.global.ui.ingress.enabled }}
-{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
-apiVersion: networking.k8s.io/v1beta1
-{{- else -}}
-apiVersion: extensions/v1
-{{- end }}
+apiVersion: {{ include "shell-ui.ingress.apiVersion" . }}
 kind: Ingress
 metadata:
   name: "{{ include "shell-ui.fullname" . }}"
@@ -31,13 +27,12 @@ spec:
     - host: {{ .Values.global.ui.ingress.host }}
       http:
         paths:
-          - path: {{ .Values.global.ui.ingress.path }}
-            pathType: Prefix
+          - path: {{ template "shell-ui.ingress-http-path" . }}
             backend:
               serviceName: {{ template "shell-ui.fullname" . }}
-              servicePort: {{ .Values.service.port }}
+              servicePort: http
   tls:
   - hosts:
     - {{ .Values.global.ui.ingress.host }}
-    secretName: "{{ .Release.Name }}-ui-tls"
+    secretName: "{{ .Release.Name }}-shell-ui-tls"
 {{- end }}
