@@ -1,3 +1,19 @@
+manager:
+  image: 
+    full: hydrosphere/monitoring-manager:latest
+
+drift-report-plugin:
+  image: 
+    full: hydrosphere/drift-report-plugin:latest
+
+profiler:
+  image: 
+    full: hydrosphere/profiler:latest
+
+shell-ui:
+  image: 
+    full: hydrosphere/shell-ui:latest
+
 global:
   ui:
     ingress:

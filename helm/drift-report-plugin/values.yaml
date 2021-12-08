@@ -20,7 +20,7 @@ global:
 
 image:
   full: hydrosphere/drift-report-plugin:latest
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
 
 service:
   type: ClusterIP

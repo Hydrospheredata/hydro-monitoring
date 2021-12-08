@@ -14,7 +14,7 @@ global:
 
 image:
   full: hydrosphere/profiler:latest
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
 
 service:
   type: ClusterIP
