@@ -37,7 +37,7 @@ spec:
             {{- end }}
             backend:
               serviceName: {{ template "minio.fullname" . }}
-              servicePort: {{ .Values.global.persistence.service.ports.api }}
+              servicePort: {{ .Values.global.persistence.service.ports.console }}
     {{- end }}
     {{- range .Values.ingress.extraHosts }}
     - host: {{ .name | quote }}
