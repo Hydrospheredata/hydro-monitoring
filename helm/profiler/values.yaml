@@ -13,7 +13,7 @@ global:
   tolerations: []
 
 image:
-  full: hydrosphere/profiler:latest
+  full: hydrosphere/profiler:c47ab9b60b2377c04af5b04e48b6e316dd90ad2c
   pullPolicy: IfNotPresent
 
 service:
