@@ -25,7 +25,7 @@ global:
   tolerations: []
 
 image:
-  full: hydrosphere/monitoring-manager:latest
+  full: hydrosphere/monitoring-manager:5724dd9c61f6a5bed5fbc8e5cb38c727cd331521
   pullPolicy: IfNotPresent
 
 containerPorts:
