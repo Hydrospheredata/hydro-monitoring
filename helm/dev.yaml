@@ -4,15 +4,15 @@ manager:
 
 drift-report-plugin:
   image: 
-    full: hydrosphere/drift-report-plugin:latest
+    full: hydrosphere/drift-report-plugin:2807382e8f96b9e9d2fc2aab870c7f2288d1ce38
 
 profiler:
   image: 
-    full: hydrosphere/profiler:latest
+    full: hydrosphere/profiler:c47ab9b60b2377c04af5b04e48b6e316dd90ad2c
 
 shell-ui:
   image: 
-    full: hydrosphere/shell-ui:latest
+    full: hydrosphere/shell-ui:5a5b373655faa041df138f2ec824a380c256672d
 
 global:
   ui:
