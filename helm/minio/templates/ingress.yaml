@@ -9,9 +9,13 @@ metadata:
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
   annotations: 
-    {{- if .Values.ingress.certManager }}
+    cert-manager.io/cluster-issuer: {{ .Values.global.ui.ingress.issuer | quote }}
     kubernetes.io/tls-acme: "true"
-    {{- end }}
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/client-max-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
     {{- if .Values.ingress.annotations }}
     {{- include "common.tplvalues.render" (dict "value" .Values.ingress.annotations "context" $) | nindent 4 }}
     {{- end }}
