@@ -1,0 +1,43 @@
+name: Local release
+on:
+  workflow_dispatch:
+    inputs:
+      service_image_name:
+        description: the service image to be updated
+        required: true
+        
+      registry_url:
+        description: the name of registry server
+        required: true
+        
+      tag:
+        description: version tag of the image
+        required: true
+
+jobs:
+  Update:
+    runs-on: ubuntu-20.04
+    continue-on-error: true
+
+    name: Bump image tag
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: main
+
+      - name: Bump image tag
+        uses: ./.github/actions/release-action
+        with:
+          release: local
+          service_image_name: ${{ github.event.inputs.service_image_name }}
+          registry_url: ${{ github.event.inputs.registry_url }}
+          tag: ${{ github.event.inputs.tag }}
+                         
+      - name: Push to repo
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -m "Releasing ${{ github.event.inputs.service_image_name }}:${{ github.event.inputs.tag }}" -a
+          git push
