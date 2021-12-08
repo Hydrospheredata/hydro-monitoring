@@ -60,9 +60,9 @@ spec:
             - name: AWS_REGION
               value: "us-west-1"
             - name: HOST
-              value: {{ if .Values.global.ui.ingress.enabled }}'https://{{ .Values.global.ui.ingress.host }}{{ trimSuffix "/" .Values.global.ui.ingress.path }}/'{{else}}'/'{{end}}
+              value: {{ if .Values.global.ui.ingress.enabled }}'https://{{ .Values.global.ui.ingress.host }}{{ trimSuffix "/" .Values.global.ui.ingress.path }}'{{else}}'{{ template "manager.fullname" . }}'{{end}}
             - name: HTTP_PORT
-              value: "{{ .Values.global.manager.service.ports.http }}"
+              value: "{{ .Values.containerPorts.http }}"
             - name: GRPC_PORT
               value: "{{ .Values.global.manager.service.ports.grpc }}"
             - name: MINIO_HOST
