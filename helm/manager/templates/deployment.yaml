@@ -95,14 +95,14 @@ spec:
               command:
               - "grpc_health_probe"
               - "-addr"
-              - ":{{ .Values.global.manager.service.ports.grpc }}"
+              - ":{{ .Values.containerPorts.grpc }}"
             initialDelaySeconds: 10
           livenessProbe:
             exec:
               command:
               - "grpc_health_probe"
               - "-addr"
-              - ":{{ .Values.global.manager.service.ports.grpc }}"
+              - ":{{ .Values.containerPorts.grpc }}"
             initialDelaySeconds: 20
           volumeMounts:
             - name: {{ template "manager.fullname" . }}-config
