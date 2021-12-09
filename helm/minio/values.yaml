@@ -18,6 +18,9 @@ global:
     ingress:
       enabled: false
       host: "hydrosphere-minio.local"
+    apiIngress:
+      enabled: false
+      host: "hydrosphere-minio-api.local"
     accessKey: "ACCESSKEYEXAMPLE" # accesskeyid for s3 or minio
     secretKey: "SECRETKEYEXAMPLE" # secretkeyid for s3 or minio
     region: "us-west-1" # region for s3

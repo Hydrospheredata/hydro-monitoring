@@ -1,5 +1,5 @@
-{{- if .Values.apiIngress.enabled -}}
-apiVersion: {{ include "common.capabilities.ingress.apiVersion" . }}
+{{- if and .Values.global.persistence.apiIngress.enabled (eq .Values.global.persistence.url "") -}}
+apiVersion: {{ include "minio.ingress.apiVersion" . }} 
 kind: Ingress
 metadata:
   name: {{ include "common.names.fullname" . }}-api
@@ -9,6 +9,13 @@ metadata:
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
   annotations:
+    cert-manager.io/cluster-issuer: {{ .Values.global.ui.ingress.issuer | quote }}
+    kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/client-max-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
     {{- if .Values.apiIngress.annotations }}
     {{- include "common.tplvalues.render" (dict "value" .Values.apiIngress.annotations "context" $) | nindent 4 }}
     {{- end }}
@@ -16,22 +23,18 @@ metadata:
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
     {{- end }}
 spec:
-  {{- if and .Values.apiIngress.ingressClassName (include "common.ingress.supportsIngressClassname" .) }}
-  ingressClassName: {{ .Values.apiIngress.ingressClassName | quote }}
-  {{- end }}
   rules:
-    {{- if .Values.apiIngress.hostname }}
-    - host: {{ .Values.apiIngress.hostname }}
+    {{- if .Values.global.persistence.apiIngress.host }}
+    - host: {{ .Values.global.persistence.apiIngress.host }}
       http:
         paths:
           {{- if .Values.apiIngress.extraPaths }}
           {{- toYaml .Values.apiIngress.extraPaths | nindent 10 }}
           {{- end }}
           - path: {{ .Values.apiIngress.path }}
-            {{- if eq "true" (include "common.ingress.supportsPathType" .) }}
-            pathType: {{ .Values.apiIngress.pathType }}
-            {{- end }}
-            backend: {{- include "common.ingress.backend" (dict "serviceName" (include "common.names.fullname" .) "servicePort" "minio-api" "context" $)  | nindent 14 }}
+            backend:
+              serviceName: {{ template "minio.fullname" . }}
+              servicePort: {{ .Values.global.persistence.service.ports.api }}
     {{- end }}
     {{- range .Values.apiIngress.extraHosts }}
     - host: {{ .name | quote }}
@@ -43,12 +46,12 @@ spec:
             {{- end }}
             backend: {{- include "common.ingress.backend" (dict "serviceName" (include "common.names.fullname" $) "servicePort" "minio-api" "context" $) | nindent 14 }}
     {{- end }}
-  {{- if or (and .Values.apiIngress.tls (or (include "minio.ingress.certManagerRequest" .Values.apiIngress.annotations) .Values.apiIngress.selfSigned)) .Values.apiIngress.extraTls }}
+  {{- if or .Values.apiIngress.tls .Values.apiIngress.extraTls }}
   tls:
-    {{- if and .Values.apiIngress.tls (or (include "minio.ingress.certManagerRequest" .Values.apiIngress.annotations) .Values.apiIngress.selfSigned) }}
+    {{- if .Values.apiIngress.tls}}
     - hosts:
-        - {{ .Values.apiIngress.hostname }}
-      secretName: {{ printf "%s-tls" .Values.apiIngress.hostname }}
+       - {{ .Values.global.persistence.apiIngress.host }}
+      secretName: {{ printf "%s-tls" .Values.global.persistence.apiIngress.host }}
     {{- end }}
     {{- if .Values.apiIngress.extraTls }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.apiIngress.extraTls "context" $ ) | nindent 4 }}
