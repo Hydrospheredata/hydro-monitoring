@@ -1,0 +1,60 @@
+name: Global Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: 'Bump rule'
+        required: false
+        default: patch
+        type: choice
+        options:
+        - major
+        - minor
+        - patch
+        - prerelease
+      version:
+        description: 'Release version (ommit to bump)'
+        required: false
+
+env:
+  DOCKER_REGISTRY_URL: hydrosphere
+  
+# Secrets:
+#   HYDRO_SERVING_TOKEN - github token with write access to all hydrosphere repos
+
+defaults:
+    run:
+      shell: bash
+
+jobs:
+  version:
+    name: 'Determine release version'
+    runs-on: ubuntu-20.04
+
+    outputs:
+      version: ${{ env.VERSION }}
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Get the latest tag
+        id: get-latest-tag
+        uses: actions-ecosystem/action-get-latest-tag@v1
+        with:
+          semver_only: true
+
+      - uses: actions-ecosystem/action-bump-semver@v1
+        id: bump-semver
+        with:
+          current_version: ${{ steps.get-latest-tag.outputs.tag }}
+          level: ${{ github.event.inputs.bump }}
+
+      - name: Set VERSION variable
+        if: env.VERSION == '' && github.event_name == 'workflow_dispatch'
+        run: echo VERSION=${{ steps.bump-semver.outputs.new_version }} >> $GITHUB_ENV
+
+      - name: Force set VERSION variable
+        if: github.event.inputs.version != ''
+        run: echo VERSION=${{ github.event.inputs.version }} >> $GITHUB_ENV
