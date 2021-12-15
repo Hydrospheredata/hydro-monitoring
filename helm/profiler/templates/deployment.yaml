@@ -60,6 +60,19 @@ spec:
                 secretKeyRef:
                   name: {{ template "minio.fullname" . }}
                   key: root-password
+            - name: POSTGRES_DB
+              value: "profiler_plugin"
+            - name: POSTGRES_USER
+              value: "{{ .Values.global.postgresql.postgresqlUsername }}"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "postgresql.fullname" . }}
+                  key: postgresql-password
+            - name: POSTGRES_HOST
+              value: {{ if .Values.global.postgresql.url }}"{{ .Values.global.postgresql.url }}"{{ else }}"{{ template "postgresql.fullname" . }}" {{ end }}
+            - name: POSTGRES_PORT
+              value: "{{ .Values.global.postgresql.servicePort }}"
           ports:
             - name: http
               containerPort: 5001

@@ -58,3 +58,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- define "manager.fullname" -}}
 {{- printf "%s-%s" .Release.Name "manager" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{- define "postgresql.fullname" -}}
+{{- printf "%s-%s" .Release.Name "postgresql" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}

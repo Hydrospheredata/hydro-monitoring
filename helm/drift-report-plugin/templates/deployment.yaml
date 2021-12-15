@@ -64,6 +64,19 @@ spec:
                 secretKeyRef:
                   name: {{ template "minio.fullname" . }}
                   key: root-password
+            - name: POSTGRES_USER
+              value: "{{ .Values.global.postgresql.postgresqlUsername }}"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "postgresql.fullname" . }}
+                  key: postgresql-password
+            - name: POSTGRES_HOST
+              value: {{ if .Values.global.postgresql.url }}"{{ .Values.global.postgresql.url }}"{{ else }}"{{ template "postgresql.fullname" . }}" {{ end }}
+            - name: POSTGRES_PORT
+              value: "{{ .Values.global.postgresql.servicePort }}"
+            - name: DB_CONNECTION_STRING
+              value: postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/stat_plugin
           ports:
             - name: http
               containerPort: 5000
