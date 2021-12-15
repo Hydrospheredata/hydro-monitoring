@@ -16,6 +16,29 @@ on:
       version:
         description: 'Release version (ommit to bump)'
         required: false
+      skip_manager:
+        description: 'Skip manager?'
+        type: boolean
+        default: 'false'
+        required: false
+
+      skip_plugins:
+        description: 'Skip plugins?'
+        type: boolean
+        default: 'false'
+        required: false
+
+      skip_ui:
+        description: 'Skip ui?'
+        type: boolean
+        default: 'false'
+        required: false
+
+      skip_release:
+        description: 'Skip release?'
+        type: boolean
+        default: 'false'
+        required: false
 
 env:
   DOCKER_REGISTRY_URL: hydrosphere
@@ -24,8 +47,8 @@ env:
 #   HYDRO_SERVING_TOKEN - github token with write access to all hydrosphere repos
 
 defaults:
-    run:
-      shell: bash
+  run:
+    shell: bash
 
 jobs:
   version:
@@ -57,4 +80,215 @@ jobs:
 
       - name: Force set VERSION variable
         if: github.event.inputs.version != ''
-        run: echo VERSION=${{ github.event.inputs.version }} >> $GITHUB_ENV
+        run: echo VERSION=v${{ github.event.inputs.version }} >> $GITHUB_ENV
+
+  manager_release:
+    if: github.event.inputs.skip_manager == 'false'
+    needs: version
+    name: 'Release manager'
+    runs-on: ubuntu-20.04
+
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+
+    steps:
+      - name: Release monitoring-manager
+        uses: aurelien-baudet/workflow-dispatch@v2.1.1
+        with:
+          workflow: Release
+          token: ${{ secrets.HYDRO_SERVING_TOKEN }}
+          repo: ${{ github.repository_owner }}/monitoring-manager
+          ref: master
+          inputs: '{"version": "${{ env.VERSION }}", "release": "global"}'
+
+  plugins_release:
+    if: github.event.inputs.skip_plugins == 'false'
+    needs: version
+    name: 'Release plugins'
+    runs-on: ubuntu-20.04
+
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+
+    strategy:
+      matrix:
+        plugin_repo_name: [hydro-profiler, drift-report-plugin]
+
+    steps:
+      - name: Release ${{ matrix.plugin_repo_name }}
+        uses: aurelien-baudet/workflow-dispatch@v2.1.1
+        with:
+          workflow: Release
+          token: ${{ secrets.HYDRO_SERVING_TOKEN }}
+          repo: ${{ github.repository_owner }}/${{ matrix.plugin_repo_name }}
+          ref: master
+          inputs: '{"version": "${{ env.VERSION }}", "release": "global"}'
+
+  ui_release:
+    if: github.event.inputs.skip_ui == 'false'
+    needs: version
+    name: 'Release ui'
+    runs-on: ubuntu-20.04
+
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+
+    steps:
+      - name: Release shell-ui
+        uses: aurelien-baudet/workflow-dispatch@v2.1.1
+        with:
+          workflow: Release
+          token: ${{ secrets.HYDRO_SERVING_TOKEN }}
+          repo: ${{ github.repository_owner }}/hydroserving-shell-ui
+          ref: master
+          inputs: '{"version": "${{ env.VERSION }}", "release": "global"}'
+
+  monitoring_release:
+    if: github.event.inputs.skip_release == 'false'
+    needs: [version, manager_release]
+    name: 'Release hydro-monitoring'
+    runs-on: ubuntu-20.04
+
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - env:
+          IMAGE: monitoring-manager
+        name: Bump $IMAGE version in chart
+        uses: ./.github/actions/release-action
+        with:
+          registry_url: ${{ env.DOCKER_REGISTRY_URL }}
+          service_image_name: ${{ env.IMAGE }}
+          tag: ${{ env.VERSION }}
+      
+      - env:
+          IMAGE: profiler
+        name: Bump $IMAGE version in chart
+        uses: ./.github/actions/release-action
+        with:
+          registry_url: ${{ env.DOCKER_REGISTRY_URL }}
+          service_image_name: ${{ env.IMAGE }}
+          tag: ${{ env.VERSION }}
+      
+      - env:
+          IMAGE: drift-report-plugin
+        name: Bump $IMAGE version in chart
+        uses: ./.github/actions/release-action
+        with:
+          registry_url: ${{ env.DOCKER_REGISTRY_URL }}
+          service_image_name: ${{ env.IMAGE }}
+          tag: ${{ env.VERSION }}
+      
+      - env:
+          IMAGE: shell-ui
+        name: Bump $IMAGE version in chart
+        uses: ./.github/actions/release-action
+        with:
+          registry_url: ${{ env.DOCKER_REGISTRY_URL }}
+          service_image_name: ${{ env.IMAGE }}
+          tag: ${{ env.VERSION }}
+      
+      - name: Set HELM_VERSION variable
+        run: |
+          HELM_VERSION=${{ env.VERSION }}
+          echo HELM_VERSION=${HELM_VERSION:1} >> $GITHUB_ENV
+      
+      - uses: azure/setup-helm@v1
+        id: install
+
+      # Bump chart version
+      - name: Update Umbrella helm chart version
+        env:
+          sedVersion: 's/^version.*/version: ${{ env.HELM_VERSION }}/g'
+          sedAppVersion: 's/^appVersion.*/appVersion: ${{ env.HELM_VERSION }}/g'
+        run: |
+          sed -i -e "$sedVersion" helm/monitoring/Chart.yaml
+          sed -i -e "$sedAppVersion" helm/monitoring/Chart.yaml
+
+      - name: Show chart version
+        run: cat helm/monitoring/Chart.yaml
+
+      - name: Lint helm
+        run: | 
+          cd helm/monitoring
+          helm dep up
+          helm template .
+          
+      - name: Create helm release
+        run: |
+          cd helm
+          helm package --dependency-update --version ${{ env.HELM_VERSION }} monitoring
+
+      - name: Calculate release sha
+        id: sha
+        run: |
+          cd helm
+          SHA=$(shasum -a 256 -b ./monitoring-${{ env.HELM_VERSION }}.tgz | awk '{ print $1 }')
+          echo ::set-output name=sha::$SHA
+
+      #TODO: update README when it is ready
+
+      - name: Add release metadata to helm/index.yaml
+        run: |
+          cd helm
+          ./add_version.sh ${{ env.HELM_VERSION }} ${{ steps.sha.outputs.sha }} 
+
+      - name: Push changes
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          sudo chown -R "${USER:-$(id -un)}" .
+          git commit -m "Releasing global version ${{ env.VERSION }}" -a --allow-empty
+          git push
+      
+      - name: Create github release
+        uses: meeDamian/github-release@2.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ env.VERSION }}
+          gzip: false
+          files: helm/monitoring-${{ env.HELM_VERSION }}.tgz
+
+      - name: Update helm chart repo index
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+
+  # slack_notification:
+  #   needs: monitoring_release
+  #   name: Slack Notification
+  #   env:
+  #     VERSION: ${{ needs.version.outputs.version }}
+    
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #   - name: Slack Notification success
+  #     if: ${{ success() }}
+  #     uses: rtCamp/action-slack-notify@v2
+  #     env:
+  #       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+  #       SLACK_CHANNEL: hydrosphere
+  #       SLACK_USERNAME: HydroRobot
+  #       SLACK_ICON: https://avatars.githubusercontent.com/u/17550625?s=200&v=4
+  #       SLACK_COLOR: ${{ job.status }}
+  #       SLACK_TITLE: Build status - success
+  #       SLACK_MESSAGE: "Congratulations! Global release Hydro-monitoring ${{ env.VERSION }} has happened :rocket:"
+  #       MSG_MINIMAL: true
+
+  #   - name: Slack Notification failure
+  #     if: ${{ failure() }}
+  #     uses: rtCamp/action-slack-notify@v2
+  #     env:
+  #       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+  #       SLACK_CHANNEL: hydrosphere
+  #       SLACK_USERNAME: HydroRobot
+  #       SLACK_ICON: https://avatars.githubusercontent.com/u/17550625?s=200&v=4
+  #       SLACK_COLOR: ${{ job.status }}
+  #       SLACK_TITLE: Build status - failure
+  #       SLACK_MESSAGE: "Check global release Hydro-monitoring ${{ env.VERSION }} build status"
+  #       MSG_MINIMAL: true
