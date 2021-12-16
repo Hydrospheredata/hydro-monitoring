@@ -99,7 +99,7 @@ jobs:
           token: ${{ secrets.HYDRO_SERVING_TOKEN }}
           repo: ${{ github.repository_owner }}/monitoring-manager
           ref: master
-          inputs: '{"version": "${{ env.VERSION }}", "release": "global"}'
+          inputs: '{"version": "${{ env.VERSION }}"}'
 
   plugins_release:
     if: github.event.inputs.skip_plugins == 'false'
@@ -122,7 +122,7 @@ jobs:
           token: ${{ secrets.HYDRO_SERVING_TOKEN }}
           repo: ${{ github.repository_owner }}/${{ matrix.plugin_repo_name }}
           ref: master
-          inputs: '{"version": "${{ env.VERSION }}", "release": "global"}'
+          inputs: '{"version": "${{ env.VERSION }}"}'
 
   ui_release:
     if: github.event.inputs.skip_ui == 'false'
@@ -141,11 +141,17 @@ jobs:
           token: ${{ secrets.HYDRO_SERVING_TOKEN }}
           repo: ${{ github.repository_owner }}/hydroserving-shell-ui
           ref: master
-          inputs: '{"version": "${{ env.VERSION }}", "release": "global"}'
+          inputs: '{"version": "${{ env.VERSION }}"}'
 
   monitoring_release:
-    if: github.event.inputs.skip_release == 'false'
-    needs: [version, manager_release]
+    needs: [version, manager_release, plugins_release, ui_release]
+    if: |
+      always() &&
+      (needs.version.result == 'success') &&
+      (needs.manager_release.result == 'success' || needs.manager_release.result == 'skipped') &&
+      (needs.plugins_release.result == 'success' || needs.plugins_release.result == 'skipped') &&
+      (needs.ui_release.result == 'success' || needs.ui_release.result == 'skipped') &&
+      (github.event.inputs.skip_release == 'false')
     name: 'Release hydro-monitoring'
     runs-on: ubuntu-20.04
 
@@ -192,19 +198,14 @@ jobs:
           service_image_name: ${{ env.IMAGE }}
           tag: ${{ env.VERSION }}
       
-      - name: Set HELM_VERSION variable
-        run: |
-          HELM_VERSION=${{ env.VERSION }}
-          echo HELM_VERSION=${HELM_VERSION:1} >> $GITHUB_ENV
-      
       - uses: azure/setup-helm@v1
         id: install
 
       # Bump chart version
       - name: Update Umbrella helm chart version
         env:
-          sedVersion: 's/^version.*/version: ${{ env.HELM_VERSION }}/g'
-          sedAppVersion: 's/^appVersion.*/appVersion: ${{ env.HELM_VERSION }}/g'
+          sedVersion: 's/^version.*/version: ${{ env.VERSION }}/g'
+          sedAppVersion: 's/^appVersion.*/appVersion: ${{ env.VERSION }}/g'
         run: |
           sed -i -e "$sedVersion" helm/monitoring/Chart.yaml
           sed -i -e "$sedAppVersion" helm/monitoring/Chart.yaml
@@ -221,13 +222,13 @@ jobs:
       - name: Create helm release
         run: |
           cd helm
-          helm package --dependency-update --version ${{ env.HELM_VERSION }} monitoring
+          helm package --dependency-update --version ${{ env.VERSION }} monitoring
 
       - name: Calculate release sha
         id: sha
         run: |
           cd helm
-          SHA=$(shasum -a 256 -b ./monitoring-${{ env.HELM_VERSION }}.tgz | awk '{ print $1 }')
+          SHA=$(shasum -a 256 -b ./monitoring-${{ env.VERSION }}.tgz | awk '{ print $1 }')
           echo ::set-output name=sha::$SHA
 
       #TODO: update README when it is ready
@@ -235,7 +236,7 @@ jobs:
       - name: Add release metadata to helm/index.yaml
         run: |
           cd helm
-          ./add_version.sh ${{ env.HELM_VERSION }} ${{ steps.sha.outputs.sha }} 
+          ./add_version.sh ${{ env.VERSION }} ${{ steps.sha.outputs.sha }} 
 
       - name: Push changes
         run: |
@@ -251,7 +252,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ env.VERSION }}
           gzip: false
-          files: helm/monitoring-${{ env.HELM_VERSION }}.tgz
+          files: helm/monitoring-${{ env.VERSION }}.tgz
 
       - name: Update helm chart repo index
         uses: peaceiris/actions-gh-pages@v3
@@ -259,36 +260,36 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: .
 
-  # slack_notification:
-  #   needs: monitoring_release
-  #   name: Slack Notification
-  #   env:
-  #     VERSION: ${{ needs.version.outputs.version }}
+  slack_notification:
+    needs: monitoring_release
+    name: Slack Notification
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
     
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #   - name: Slack Notification success
-  #     if: ${{ success() }}
-  #     uses: rtCamp/action-slack-notify@v2
-  #     env:
-  #       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-  #       SLACK_CHANNEL: hydrosphere
-  #       SLACK_USERNAME: HydroRobot
-  #       SLACK_ICON: https://avatars.githubusercontent.com/u/17550625?s=200&v=4
-  #       SLACK_COLOR: ${{ job.status }}
-  #       SLACK_TITLE: Build status - success
-  #       SLACK_MESSAGE: "Congratulations! Global release Hydro-monitoring ${{ env.VERSION }} has happened :rocket:"
-  #       MSG_MINIMAL: true
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Slack Notification success
+      if: ${{ success() }}
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        SLACK_CHANNEL: hydrosphere
+        SLACK_USERNAME: HydroRobot
+        SLACK_ICON: https://avatars.githubusercontent.com/u/17550625?s=200&v=4
+        SLACK_COLOR: ${{ job.status }}
+        SLACK_TITLE: Build status - success
+        SLACK_MESSAGE: "Congratulations! Global release Hydro-monitoring ${{ env.VERSION }} has happened :rocket:"
+        MSG_MINIMAL: true
 
-  #   - name: Slack Notification failure
-  #     if: ${{ failure() }}
-  #     uses: rtCamp/action-slack-notify@v2
-  #     env:
-  #       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-  #       SLACK_CHANNEL: hydrosphere
-  #       SLACK_USERNAME: HydroRobot
-  #       SLACK_ICON: https://avatars.githubusercontent.com/u/17550625?s=200&v=4
-  #       SLACK_COLOR: ${{ job.status }}
-  #       SLACK_TITLE: Build status - failure
-  #       SLACK_MESSAGE: "Check global release Hydro-monitoring ${{ env.VERSION }} build status"
-  #       MSG_MINIMAL: true
+    - name: Slack Notification failure
+      if: ${{ failure() }}
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        SLACK_CHANNEL: hydrosphere
+        SLACK_USERNAME: HydroRobot
+        SLACK_ICON: https://avatars.githubusercontent.com/u/17550625?s=200&v=4
+        SLACK_COLOR: ${{ job.status }}
+        SLACK_TITLE: Build status - failure
+        SLACK_MESSAGE: "Check global release Hydro-monitoring ${{ env.VERSION }} build status"
+        MSG_MINIMAL: true
