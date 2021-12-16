@@ -19,7 +19,7 @@ global:
   tolerations: []
 
 image:
-  full: hydrosphere/drift-report-plugin:1797034c2ddbd306761c77e74930df03b09d9141
+  full: hydrosphere/drift-report-plugin:9bb9caf630d3247fba2a681f4fb4029b937fdef8
   pullPolicy: IfNotPresent
 
 service:
