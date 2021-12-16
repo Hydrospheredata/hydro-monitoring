@@ -17,7 +17,7 @@ global:
   tolerations: []
 
 image:
-  full: hydrosphere/shell-ui:1586a31fb40194d335b3df5a169ee8f7273a683e
+  full: hydrosphere/shell-ui:20115fababf181e5394c862f8ecb37930094cba8
   pullPolicy: IfNotPresent
 
 service:
