@@ -1,35 +1,51 @@
+# -- number of replicas
 replicaCount: 1
 
 global:
   persistence:
-    url: "" # Endpoint for the object storage. Compatible with S3 or Minio.
+    # -- Endpoint for the object storage. Compatible with S3 or Minio
+    url: "" 
     service:
       ports:
+        # -- Minio api port
         api: 9000
   manager:
     service:
       ports:
+        # -- Manager grpc port
         grpc: 8081
+
+  # -- Tolerations for profiler pods
   tolerations: []
 
 image:
+  # -- profiler image
   full: hydrosphere/profiler:7558994af1c62562451864117e69201eb15a7751
+  # -- profiler image pull policy
   pullPolicy: IfNotPresent
 
 service:
+  # -- Kubernetes Service type
   type: ClusterIP
+  # -- profiler port
   port: 5001
 
 podSecurityContext:
+  # -- User ID for the container
   runAsUser: 42069
 
 securityContext:
+  # -- Container child process can gain more privileges than its parent
   allowPrivilegeEscalation: false
 
+# -- Map of annotations to add to the pods
 podAnnotations: {}
 
+# -- Map of resources to add to the pods
 resources: {}
 
+# -- Node labels for profiler pods assignment
 nodeSelector: {}
 
+# -- Affinity for profiler pods assignment
 affinity: {}
