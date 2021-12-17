@@ -57,4 +57,11 @@ runs:
 
     - name: Update dev.yaml
       run: "cd helm && sed -i \"s/.*full:.*${{ inputs.service_image_name }}.*/    full: ${{ inputs.registry_url }}\\/${{ inputs.service_image_name }}:${{ inputs.tag }}/g\" dev.yaml"
-      shell: bash 
+      shell: bash
+    
+    - name: Run helm-docs
+      run: |
+        GOBIN=$PWD GO111MODULE=on go get github.com/norwoodj/helm-docs/cmd/helm-docs
+        ./helm-docs --sort-values-order file
+        rm helm-docs
+      shell: bash

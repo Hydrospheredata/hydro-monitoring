@@ -4,5 +4,6 @@ repos:
     hooks:
       - id: helm-docs
         args:
+          - --sort-values-order=file
           # Make the tool search for charts only under the `example-charts` directory
           - --chart-search-root=helm
