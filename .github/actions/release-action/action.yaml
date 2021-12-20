@@ -29,18 +29,22 @@ runs:
 
           monitoring-manager)
             HELM_CHART_NAME=manager
+            SERVICE_TAG=MANAGER_TAG
             ;;
 
           profiler)
             HELM_CHART_NAME=profiler
+            SERVICE_TAG=PROFILER_TAG
             ;;
 
           shell-ui)
             HELM_CHART_NAME=shell-ui
+            SERVICE_TAG=UI_TAG
             ;;
 
           drift-report-plugin)
             HELM_CHART_NAME=drift-report-plugin
+            SERVICE_TAG=DRIFT_REPORT_PLUGIN_TAG
             ;;
 
           *)
@@ -50,6 +54,7 @@ runs:
         esac
         
         echo ::set-output name=HELM_CHART_NAME::$HELM_CHART_NAME
+        echo ::set-output name=SERVICE_TAG::$SERVICE_TAG
         
     - name: Update ${{ steps.var.outputs.HELM_CHART_NAME }}/values.yaml
       run: "cd helm && sed -i \"s/.*full:.*/  full: ${{ inputs.registry_url }}\\/${{ inputs.service_image_name }}:${{ inputs.tag }}/g\" ${{ steps.var.outputs.HELM_CHART_NAME }}/values.yaml"
@@ -64,4 +69,8 @@ runs:
         GOBIN=$PWD GO111MODULE=on go get github.com/norwoodj/helm-docs/cmd/helm-docs
         ./helm-docs --sort-values-order file
         rm helm-docs
+      shell: bash
+
+    - name: Update docker-compose service image
+      run: "cd docker-compose && sed -i \"s/${{ steps.var.outputs.SERVICE_TAG }}=.*/${{ steps.var.outputs.SERVICE_TAG }}=${{ inputs.tag }}/g\" .env"
       shell: bash
