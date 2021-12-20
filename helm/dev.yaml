@@ -12,7 +12,7 @@ profiler:
 
 shell-ui:
   image: 
-    full: hydrosphere/shell-ui:20115fababf181e5394c862f8ecb37930094cba8
+    full: hydrosphere/shell-ui:5a0ecce211796403cdf3a40ef63adec8af02523c
 
 global:
   ui:
