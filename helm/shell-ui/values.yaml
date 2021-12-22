@@ -31,7 +31,7 @@ service:
   # -- Kubernetes Service type
   type: ClusterIP
   # -- shell-ui port
-  port: 9090
+  port: 8080
 
 podSecurityContext:
   # -- User ID for the container

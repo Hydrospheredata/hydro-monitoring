@@ -70,8 +70,8 @@ spec:
           env: 
             - name: AWS_REGION
               value: "us-west-1"
-            - name: HOST
-              value: {{ if .Values.global.ui.ingress.enabled }}'https://{{ .Values.global.ui.ingress.host }}{{ trimSuffix "/" .Values.global.ui.ingress.path }}'{{else}}'http://{{ template "manager.fullname" . }}'{{end}}
+            - name: EXTERNAL_URL
+              value: {{ if .Values.global.ui.ingress.enabled }}'https://{{ .Values.global.ui.ingress.host }}{{ trimSuffix "/" .Values.global.ui.ingress.path }}:443'{{else}}'http://localhost:{{ .Values.global.manager.service.ports.http }}'{{end}}
             - name: HTTP_PORT
               value: "{{ .Values.containerPorts.http }}"
             - name: GRPC_PORT

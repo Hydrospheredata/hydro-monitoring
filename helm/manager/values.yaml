@@ -43,7 +43,7 @@ image:
 
 containerPorts:
   # -- manager container http port
-  http: 443
+  http: 8080
   # -- manager container grpc port
   grpc: 8081
   # -- manager container jmx port
