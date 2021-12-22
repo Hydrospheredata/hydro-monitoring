@@ -67,8 +67,8 @@ helm install --name hydromonitoring --namespace hydromonitoring hydromonitoring/
 
 To reach the cluster, port-forward `shell-ui` service locally. 
 
-```
-kubectl port-forward -n hydromonitoring svc/hydromonitoring-shell-ui 8080:9090
+```sh
+kubectl port-forward -n hydromonitoring svc/hydromonitoring-shell-ui 8080:8080
 ```
 
 Hydro-Monitoring will be available at [localhost:8080](http://localhost:8080/).
