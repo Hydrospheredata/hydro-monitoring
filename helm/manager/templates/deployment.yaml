@@ -37,6 +37,14 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
+      {{- if .Values.monitoring.enabled }}
+        - name: jmx-exporter
+          image: bitnami/jmx-exporter:latest
+          ports:
+            - name: jmx-exporter
+              containerPort: 5556
+              protocol: TCP
+      {{- end }}
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
@@ -56,6 +64,9 @@ spec:
             - name: grpc
               containerPort: {{ .Values.containerPorts.grpc }}
               protocol: TCP
+            - name: jmx
+              protocol: TCP
+              containerPort: {{ .Values.containerPorts.jmx }}
           env: 
             - name: AWS_REGION
               value: "us-west-1"

@@ -46,6 +46,8 @@ containerPorts:
   http: 443
   # -- manager container grpc port
   grpc: 8081
+  # -- manager container jmx port
+  jmx: 5555
 
 resources:
   limits:
@@ -59,8 +61,16 @@ resources:
     # -- The requested memory for the container
     memory: 2Gi
 
+monitoring:
+  # -- JMX metrics monitoring
+  enabled: false
+
 # -- Map of annotations to add to the pods
-podAnnotations: {}
+podAnnotations:
+  # -- Scrape by prometheus
+  prometheus.io/scrape: "true"
+  # -- Port of jmx exporter
+  prometheus.io/port: "5556"
 
 # -- Node labels for manager pods assignment
 nodeSelector: {}

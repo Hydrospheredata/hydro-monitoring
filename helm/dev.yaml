@@ -1,6 +1,8 @@
 manager:
   image: 
     full: hydrosphere/monitoring-manager:6bf7b627406890d0527a569f8f6c62c1a8402e71
+  monitoring:
+    enabled: true
 
 drift-report-plugin:
   image: 
