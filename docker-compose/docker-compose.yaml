@@ -75,7 +75,6 @@ services:
         condition: service_started
     environment:
       AWS_REGION: us-west-1
-      CONFIG_FORCE_pushgateway_url: http://pushgateway:9091
     healthcheck:
       interval: 5s
       retries: 6
@@ -103,13 +102,6 @@ services:
       HTTP_HOST: profiler
     image: hydrosphere/profiler:${PROFILER_TAG}
     mem_limit: 1g
-
-  pushgateway:
-    container_name: pushgateway
-    image: prom/pushgateway:${PUSHGATEWAY_TAG}
-    ports:
-    - published: 9091
-      target: 9091
 
   shell-ui:
     container_name: shell-ui

@@ -231,7 +231,9 @@ jobs:
           SHA=$(shasum -a 256 -b ./monitoring-${{ env.VERSION }}.tgz | awk '{ print $1 }')
           echo ::set-output name=sha::$SHA
 
-      #TODO: update README when it is ready
+      - name: Update README.md
+        run: |
+          sed -i -E "s/export HYDRO_MONITORING_RELEASE=.*/export HYDRO_MONITORING_RELEASE=${{ env.VERSION }}/g" README.md
 
       - name: Add release metadata to helm/index.yaml
         run: |
