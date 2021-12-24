@@ -10,7 +10,9 @@ Monitoring Platform
 
 ## Installation
 
-There are two main ways of installing Hydro-Monitoring:
+The Hydro-Monitoring platform can be installed in the following orchestrators:
+- [Docker](#docker)
+- [Kubernetes](#kubernetes)
 
 ### Docker
 
@@ -19,7 +21,7 @@ Before installing Hydrosphere Monitoring, please install its prerequisites:
 * [Docker 20+, with BuildKit enabled](https://docs.docker.com/get-docker/);
 * [Docker Compose 1.29+](https://docs.docker.com/compose/install/#install-compose).
 
-To deploy the Hydrosphere platform from release, follow the instructions below:
+#### Install from releases
 
 1. Download the latest release version from the [releases](https://github.com/Hydrospheredata/hydro-monitoring/releases) page;
     ```sh 
@@ -38,7 +40,7 @@ To deploy the Hydrosphere platform from release, follow the instructions below:
     docker-compose up -d
     ```
 
-To deploy the Hydro-Monitoring platform from the master branch, follow the instructions below:
+#### Install from source
 
 1. Clone the repository locally.
     ```sh
@@ -58,14 +60,34 @@ Before installing Hydrosphere Monitoring, please install its prerequisites:
 * [Helm 3.0+](https://helm.sh/docs/intro/install/)
 * [Kubernetes 1.16+ with v1 API](https://kubernetes.io/docs/setup/) with beta APIs enabled.
 
-To install Hydrosphere Monitoring, follow the instructions below:
+#### Install from charts repository
 
-```sh
-helm repo add hydromonitoring https://hydrospheredata.github.io/hydro-monitoring/helm/
-helm install --name hydromonitoring --namespace hydromonitoring hydromonitoring/monitoring
-```
+1. Add the Hydrosphere Monitoring charts repository:
+    ```sh
+    helm repo add hydromonitoring https://hydrospheredata.github.io/hydro-monitoring/helm/
+    ```
+2. Install the chart from repo to the cluster:
+    ```sh
+    helm install --name hydromonitoring --namespace hydromonitoring hydromonitoring/monitoring
+    ```
 
-To reach the cluster, port-forward `shell-ui` service locally. 
+#### Install from source
+
+1. Clone the repository:
+    ```sh
+    git clone https://github.com/Hydrospheredata/hydro-monitoring
+    cd hydro-monitoring/helm
+    ```
+2. Build dependencies:
+    ```sh
+    helm dependency build monitoring
+    ```
+3. Install the chart:
+    ```sh
+    helm install --namespace hydromonitoring monitoring
+    ```
+
+After the chart has been installed, you have to expose the `shell-ui` component outside of the cluster. For the sake of simplicity, we will just port-forward it locally.
 
 ```sh
 kubectl port-forward -n hydromonitoring svc/hydromonitoring-shell-ui 8080:8080
