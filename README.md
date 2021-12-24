@@ -68,7 +68,7 @@ Before installing Hydrosphere Monitoring, please install its prerequisites:
     ```
 2. Install the chart from repo to the cluster:
     ```sh
-    helm install --name hydromonitoring --namespace hydromonitoring hydromonitoring/monitoring
+    helm install monitoring hydromonitoring/monitoring --namespace hydromonitoring --create-namespace
     ```
 
 #### Install from source
@@ -84,13 +84,13 @@ Before installing Hydrosphere Monitoring, please install its prerequisites:
     ```
 3. Install the chart:
     ```sh
-    helm install --namespace hydromonitoring monitoring
+    helm install monitoring monitoring --namespace hydromonitoring --create-namespace
     ```
 
 After the chart has been installed, you have to expose the `shell-ui` component outside of the cluster. For the sake of simplicity, we will just port-forward it locally.
 
 ```sh
-kubectl port-forward -n hydromonitoring svc/hydromonitoring-shell-ui 8080:8080
+k port-forward svc/monitoring-shell-ui 8080:8080 -n hydromonitoring
 ```
 
 Hydro-Monitoring will be available at [localhost:8080](http://localhost:8080/).
@@ -103,4 +103,4 @@ Keep up to date and get Hydrosphere.io support via [![Slack](https://img.shields
 
 We'd be glad to receive any help from the community!
 
-Check out our issues for anything labeled with `help-wanted`, they will be the perfect starting point! If you don't see any, just let us know, we would be happy to hear from you.
+Check out our issues for anything labeled with `help wanted`, they will be the perfect starting point! If you don't see any, just let us know, we would be happy to hear from you.
