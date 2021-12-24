@@ -23,7 +23,7 @@ global:
 
 image:
   # -- shell-ui image
-  full: hydrosphere/shell-ui:f3af9622b3cdd5b9a8d7b066ee6c19df8d1ea315
+  full: hydrosphere/shell-ui:f694397d4e73da757af5084f19f3529651d07feb
   # -- shell-ui image pull policy
   pullPolicy: IfNotPresent
 
