@@ -39,6 +39,12 @@ on:
         type: boolean
         default: 'false'
         required: false
+      
+      skip_slack:
+        description: 'Skip slack notification?'
+        type: boolean
+        default: 'false'
+        required: false
 
 env:
   DOCKER_REGISTRY_URL: hydrosphere
@@ -263,6 +269,7 @@ jobs:
           publish_dir: .
 
   slack_notification:
+    if: github.event.inputs.skip_slack == 'false'
     needs: monitoring_release
     name: Slack Notification
     env:
