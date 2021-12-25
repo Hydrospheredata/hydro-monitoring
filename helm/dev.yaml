@@ -10,7 +10,7 @@ drift-report-plugin:
 
 profiler:
   image: 
-    full: hydrosphere/profiler:2b37818b5dd323ab5bc4fae28b53485606703145
+    full: hydrosphere/profiler:1430d989e48a1b3395aac5a7eb05097698d3310e
 
 shell-ui:
   image: 
