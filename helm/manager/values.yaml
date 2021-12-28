@@ -37,7 +37,7 @@ global:
 
 image:
   # -- manager image
-  full: hydrosphere/monitoring-manager:cbefb1790785961349f5cd3b96e27e44d0dec437
+  full: hydrosphere/monitoring-manager:94681b176d0e40adb8c3ab296b9eab78febcc214
   # -- manager image pull policy
   pullPolicy: IfNotPresent
 
