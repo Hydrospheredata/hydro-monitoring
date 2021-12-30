@@ -1,39 +1,66 @@
 global:
   ui: 
     ingress:
+      # -- Enable frontend ingress
       enabled: false
-      host: "hydromonitoring.local" # Domain name for the frontend ingress.
-      path: "/" # Path, which will match the service.
-      issuer: "letsencrypt-prod" # A name of the cert-manager issuer name, configured within the 
-                                 # cluster.
+      # -- Domain name for the frontend ingress
+      host: "hydromonitoring.local"
+      # -- Path, which will match the service
+      path: "/"
+      # -- A name of the cert-manager issuer name, configured within the cluster
+      issuer: "letsencrypt-prod"
 
   postgresql:
+    # -- Specify Postgresql connection string if you want to use an external Postgresql instance. If empty, an in-cluster deployment will be provisioned
     url: ""
+    # -- Postgresql username. Used for an internal installation
     postgresqlUsername: "root" # required to be set
+    # -- Postgresql password. Used for an internal installation
     postgresqlPassword: "root" # required to be set
+    # -- Postgresql database name. Used for an internal installation
     postgresqlDatabase: "monitoring"
+    # -- Postgresql service port
     servicePort: 5432
 
   persistence:
-    url: "" # Endpoint for the object storage. Compatible with S3 or Minio.
+    # -- Endpoint for the object storage. Compatible with S3 or Minio
+    url: ""
+    # -- Use pvc("minio") or s3("s3")
     mode: "minio"
     ingress:
+      # -- Enable minio console ingress
       enabled: false
+      # -- Domain name for the minio console ingress
       host: "hydrosphere-minio.local"
     apiIngress:
+      # -- Enable minio api ingress
       enabled: false
+      # -- Domain name for the minio api ingress
       host: "hydrosphere-minio-api.local"
-    accessKey: "ACCESSKEYEXAMPLE" # accesskeyid for s3 or minio
-    secretKey: "SECRETKEYEXAMPLE" # secretkeyid for s3 or minio
+    
+    # -- ACCESS_KEY_ID for s3 or minio
+    accessKey: "ACCESSKEYEXAMPLE"
+    # -- SECRET_KEY_ID for s3 or minio
+    secretKey: "SECRETKEYEXAMPLE"
     #region: "us-west-1" # region for s3
     service:
       ports:
+        # -- Minio api port
         api: 9000
+        # -- Minio console port
         console: 9001
   
   manager:
     service:
-      http_port: 8080
-      grpc_port: 8081
+      ports:
+        # -- manager service http port
+        http: 8080
+        # -- manager service grpc port
+        grpc: 8081
+  
+  # -- Enable exporting metrics option to opentelemetry-collector
+  metrics: false
+    
 
+  # -- Tolerations for pods in hydro-monitoring
   tolerations: []

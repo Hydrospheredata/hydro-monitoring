@@ -3,7 +3,7 @@ name: monitoring
 description: Hydro-monitoring is a cluster for monitoring your machine learning models in production
 type: application
 version: 0.1.0
-appVersion: 0.0.1
+appVersion: 0.1.0
 keywords:
   - hydrosphere
   - hydro-monitoring
@@ -23,7 +23,7 @@ maintainers:
 dependencies:
   - name: postgresql
     repository: file://../postgresql
-    version: "~10.13.9"
+    version: "~10.13.10"
   - name: minio
     repository: file://../minio
     version: "~9.2.1"
@@ -39,3 +39,6 @@ dependencies:
   - name: profiler
     repository: file://../profiler
     version: "~0.1.0"
+  - name: opentelemetry-collector
+    repository: file://../opentelemetry-collector
+    version: "~0.8.1"

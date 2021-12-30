@@ -2,40 +2,57 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# -- number of replicas
 replicaCount: 1
 
 global:
   persistence:
-    url: "" # Endpoint for the object storage. Compatible with S3 or Minio.
+    # -- Endpoint for the object storage. Compatible with S3 or Minio
+    url: ""
     service:
       ports:
+        # -- Minio api port
         api: 9000
 
   manager:
     service:
       ports:
+        # -- Manager http port
         http: 8080
+        # -- Manager grpc port
         grpc: 8081
+  
+  # -- Tolerations for drift-report-plugin pods
   tolerations: []
 
 image:
-  full: hydrosphere/drift-report-plugin:3a78805d62f234e3738ccdfcb52618d7fcae8243
+  # -- drift-report-plugin image
+  full: hydrosphere/drift-report-plugin:0.1.0
+  # -- drift-report-plugin image pull policy
   pullPolicy: IfNotPresent
 
 service:
+  # -- Kubernetes Service type
   type: ClusterIP
+  # -- drift-report-plugin port
   port: 5000
 
 podSecurityContext:
+  # -- User ID for the container
   runAsUser: 42069
 
 securityContext:
+  # -- Container child process can gain more privileges than its parent
   allowPrivilegeEscalation: false
 
+# -- Map of annotations to add to the pods
 podAnnotations: {}
 
+# -- Map of resources to add to the pods
 resources: {}
 
+# -- Node labels for drift-report-plugin pods assignment
 nodeSelector: {}
 
+# -- Affinity for drift-report-plugin pods assignment
 affinity: {}

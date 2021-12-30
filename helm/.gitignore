@@ -1,7 +1,5 @@
 # Helm internals
-*.lock
-*/*.lock
-*.tgz
+**/*.lock
 **/*.tgz
 **/_partials.tpl
 **/_globals.tpl

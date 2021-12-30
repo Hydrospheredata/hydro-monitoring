@@ -58,3 +58,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- define "minio.fullname" -}}
 {{- printf "%s-%s" .Release.Name "minio" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{- define "opentelemetry-collector.fullname" -}}
+{{- printf "%s-%s" .Release.Name "opentelemetry-collector" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}

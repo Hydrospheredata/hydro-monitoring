@@ -1,47 +1,79 @@
+# -- number of replicas
 replicaCount: 1
 
 global:
   postgresql:
-    url: "" # Specify Postgresql connection string if you want to use an external Postgresql instance. 
-            # If empty, an in-cluster deployment will be provisioned.
-    postgresqlDatabase: "monitoring" # Postgresql database name. Used for an internal installation.
-    postgresqlUsername: "postgres" # Postgresql username. Used for an internal installation.
-    postgresqlPassword: "hydr0m0nit0ring" # Postgresql password. Used for an internal installation.
+    # -- Specify Postgresql connection string if you want to use an external Postgresql instance. If empty, an in-cluster deployment will be provisioned
+    url: ""
+    # -- Postgresql database name. Used for an internal installation
+    postgresqlDatabase: "monitoring"
+    # -- Postgresql username. Used for an internal installation
+    postgresqlUsername: "postgres"
+    # -- Postgresql password. Used for an internal installation
+    postgresqlPassword: "hydr0m0nit0ring"
+    # -- Postgresql service port
     servicePort: 5432
   
   manager:
     service:
+      # -- Kubernetes Service type
       type: ClusterIP
       ports:
+        # -- manager service http port
         http: 8080
+        # -- manager service grpc port
         grpc: 8081
   
   persistence:
-    url: "" # Endpoint for the object storage. Compatible with S3 or Minio.
+    # Endpoint for the object storage. Compatible with S3 or Minio
+    url: ""
     service:
       ports:
+        # -- Minio api port
         api: 9000
 
+  # -- Tolerations for manager pods
   tolerations: []
 
 image:
-  full: hydrosphere/monitoring-manager:6bf7b627406890d0527a569f8f6c62c1a8402e71
+  # -- manager image
+  full: hydrosphere/monitoring-manager:0.1.0
+  # -- manager image pull policy
   pullPolicy: IfNotPresent
 
 containerPorts:
-  http: 443
+  # -- manager container http port
+  http: 8080
+  # -- manager container grpc port
   grpc: 8081
+  # -- manager container jmx port
+  jmx: 5555
 
 resources:
   limits:
+    # -- The cpu limit for the container
     cpu: 2000m
+    # -- The memory limit for the container
     memory: 2Gi
   requests:
+    # -- The requested cpu for the container
     cpu: 1000m
+    # -- The requested memory for the container
     memory: 2Gi
 
-podAnnotations: {}
+monitoring:
+  # -- JMX metrics monitoring
+  enabled: false
 
+# -- Map of annotations to add to the pods
+podAnnotations:
+  # -- Scrape by prometheus
+  prometheus.io/scrape: "true"
+  # -- Port of jmx exporter
+  prometheus.io/port: "5556"
+
+# -- Node labels for manager pods assignment
 nodeSelector: {}
 
+# -- Affinity for manager pods assignment
 affinity: {}

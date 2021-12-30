@@ -37,6 +37,14 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
+      {{- if .Values.monitoring.enabled }}
+        - name: jmx-exporter
+          image: bitnami/jmx-exporter:latest
+          ports:
+            - name: jmx-exporter
+              containerPort: 5556
+              protocol: TCP
+      {{- end }}
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
@@ -56,11 +64,14 @@ spec:
             - name: grpc
               containerPort: {{ .Values.containerPorts.grpc }}
               protocol: TCP
+            - name: jmx
+              protocol: TCP
+              containerPort: {{ .Values.containerPorts.jmx }}
           env: 
             - name: AWS_REGION
               value: "us-west-1"
-            - name: HOST
-              value: {{ if .Values.global.ui.ingress.enabled }}'https://{{ .Values.global.ui.ingress.host }}{{ trimSuffix "/" .Values.global.ui.ingress.path }}'{{else}}'http://{{ template "manager.fullname" . }}'{{end}}
+            - name: EXTERNAL_URL
+              value: {{ if .Values.global.ui.ingress.enabled }}'https://{{ .Values.global.ui.ingress.host }}:443{{ trimSuffix "/" .Values.global.ui.ingress.path }}'{{else}}'http://localhost:8080'{{end}}
             - name: HTTP_PORT
               value: "{{ .Values.containerPorts.http }}"
             - name: GRPC_PORT
@@ -90,6 +101,8 @@ spec:
                 secretKeyRef:
                   name: {{ template "postgresql.fullname" . }}
                   key: postgresql-password
+            - name: OTEL_COLLECTOR_URL
+              value: "{{ template "opentelemetry-collector.fullname" . }}:4317"
           readinessProbe:
             exec:
               command:

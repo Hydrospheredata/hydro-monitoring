@@ -1,18 +1,26 @@
 manager:
   image: 
-    full: hydrosphere/monitoring-manager:6bf7b627406890d0527a569f8f6c62c1a8402e71
+    full: hydrosphere/monitoring-manager:0.1.0
+  monitoring:
+    enabled: true
 
 drift-report-plugin:
   image: 
-    full: hydrosphere/drift-report-plugin:3a78805d62f234e3738ccdfcb52618d7fcae8243
+    full: hydrosphere/drift-report-plugin:0.1.0
 
 profiler:
   image: 
-    full: hydrosphere/profiler:7558994af1c62562451864117e69201eb15a7751
+    full: hydrosphere/profiler:0.1.0
 
 shell-ui:
   image: 
-    full: hydrosphere/shell-ui:20115fababf181e5394c862f8ecb37930094cba8
+    full: hydrosphere/shell-ui:0.1.0
+
+opentelemetry-collector:
+  config:
+    exporters:
+      prometheusremotewrite:
+        endpoint: http://kube-prometheus-prometheus:9090/api/v1/write
 
 global:
   ui:
