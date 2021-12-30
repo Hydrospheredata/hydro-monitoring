@@ -30,7 +30,7 @@ Before installing Hydrosphere Monitoring, please install its prerequisites:
 
     wget -O hydro-monitoring-${HYDRO_MONITORING_RELEASE}.tar.gz https://github.com/Hydrospheredata/hydro-monitoring/archive/${HYDRO_MONITORING_RELEASE}.tar.gz
     ```
-2. Unpack the tar ball;
+2. Unpack the tar ball:
     ```sh 
     tar -xvf hydro-monitoring-${HYDRO_MONITORING_RELEASE}.tar.gz
     ```
@@ -38,6 +38,10 @@ Before installing Hydrosphere Monitoring, please install its prerequisites:
     ```sh
     cd hydro-monitoring-${HYDRO_MONITORING_RELEASE}/docker-compose
     docker-compose up -d
+    ```
+4. *To see metrics in Grafana-Prometheus stack:
+    ```sh
+    docker-compose -f docker-compose.yaml -f docker-compose.metrics.yaml up -d
     ```
 
 #### Install from source
@@ -50,6 +54,10 @@ Before installing Hydrosphere Monitoring, please install its prerequisites:
 2. Set up an environment.
     ```sh
     docker-compose up -d
+    ```
+3. *To see metrics in Grafana-Prometheus stack:
+    ```sh
+    docker-compose -f docker-compose.yaml -f docker-compose.metrics.yaml up -d
     ```
 Hydro-Monitoring will be available at [localhost](http://localhost).
 

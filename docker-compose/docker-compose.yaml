@@ -71,8 +71,6 @@ services:
         condition: service_healthy
       minio:
         condition: service_healthy
-      pushgateway:
-        condition: service_started
     environment:
       AWS_REGION: us-west-1
     healthcheck:
@@ -101,7 +99,7 @@ services:
       AWS_SECRET_ACCESS_KEY: minioadmin
       HTTP_HOST: profiler
     image: hydrosphere/profiler:${PROFILER_TAG}
-    mem_limit: 1g
+    mem_limit: 2g
 
   shell-ui:
     container_name: shell-ui
