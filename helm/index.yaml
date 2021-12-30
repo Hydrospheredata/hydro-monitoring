@@ -2,14 +2,6 @@ apiVersion: v1
 entries:
   monitoring:
   - apiVersion: v2
-    created: "2021-12-16T22:45:33.48467+03:00"
-    description: Hydro-monitoring is a cluster for monitoring your machine learning models in production
-    digest: 6537cc351d0e73ac08d22d3506c4ff1b216869b6012748eb485acf4573b3557d
-    name: monitoring
-    urls:
-    - https://hydrospheredata.github.io/hydro-monitoring/helm/monitoring-0.1.0.tgz
-    version: 0.1.0
-  - apiVersion: v2
     created: 2021-12-30T17:53:40Z
     description: Hydro-monitoring is a cluster for monitoring your machine learning models in production
     digest: 119937cbea021009eee29372a4e53e457d358187683d8310aef7ecf143e3c59f
