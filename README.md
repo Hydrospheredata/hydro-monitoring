@@ -26,7 +26,7 @@ Before installing Hydrosphere Monitoring, please install its prerequisites:
 1. Download the latest release version from the [releases](https://github.com/Hydrospheredata/hydro-monitoring/releases) page;
     ```sh 
     ### __released_version__
-    export HYDRO_MONITORING_RELEASE=0.0.1
+    export HYDRO_MONITORING_RELEASE=0.1.0
 
     wget -O hydro-monitoring-${HYDRO_MONITORING_RELEASE}.tar.gz https://github.com/Hydrospheredata/hydro-monitoring/archive/${HYDRO_MONITORING_RELEASE}.tar.gz
     ```
