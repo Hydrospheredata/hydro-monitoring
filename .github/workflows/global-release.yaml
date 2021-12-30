@@ -86,7 +86,7 @@ jobs:
 
       - name: Force set VERSION variable
         if: github.event.inputs.version != ''
-        run: echo VERSION=v${{ github.event.inputs.version }} >> $GITHUB_ENV
+        run: echo VERSION=${{ github.event.inputs.version }} >> $GITHUB_ENV
 
   manager_release:
     if: github.event.inputs.skip_manager == 'false'
