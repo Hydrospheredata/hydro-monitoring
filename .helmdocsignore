@@ -1,2 +1,3 @@
 helm/minio/*
 helm/postgresql/*
+helm/opentelemetry-collector/*

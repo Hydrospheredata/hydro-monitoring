@@ -57,6 +57,10 @@ global:
         http: 8080
         # -- manager service grpc port
         grpc: 8081
+  
+  # -- Enable exporting metrics option to opentelemetry-collector
+  metrics: false
+    
 
   # -- Tolerations for pods in hydro-monitoring
   tolerations: []

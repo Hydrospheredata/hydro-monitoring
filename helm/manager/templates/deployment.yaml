@@ -101,6 +101,8 @@ spec:
                 secretKeyRef:
                   name: {{ template "postgresql.fullname" . }}
                   key: postgresql-password
+            - name: OTEL_COLLECTOR_URL
+              value: "{{ template "opentelemetry-collector.fullname" . }}:4317"
           readinessProbe:
             exec:
               command:
