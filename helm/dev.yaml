@@ -14,7 +14,7 @@ profiler:
 
 shell-ui:
   image: 
-    full: hydrosphere/shell-ui:0.1.0
+    full: hydrosphere/shell-ui:8f842a38c0b1fcc75bf444b581fd709d012ab41c
 
 opentelemetry-collector:
   config:
