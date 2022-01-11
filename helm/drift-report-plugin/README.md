@@ -26,7 +26,7 @@ A Helm chart for drift-report-plugin
 | global.manager.service.ports.http | int | `8080` | Manager http port |
 | global.manager.service.ports.grpc | int | `8081` | Manager grpc port |
 | global.tolerations | list | `[]` | Tolerations for drift-report-plugin pods |
-| image.full | string | `"hydrosphere/drift-report-plugin:4747ffeabcc572dd67ed727d5f59c75fc74cfd80"` | drift-report-plugin image |
+| image.full | string | `"hydrosphere/drift-report-plugin:98b502a4941e82aa2829b1e3e476bf42eca83846"` | drift-report-plugin image |
 | image.pullPolicy | string | `"IfNotPresent"` | drift-report-plugin image pull policy |
 | service.type | string | `"ClusterIP"` | Kubernetes Service type |
 | service.port | int | `5000` | drift-report-plugin port |
