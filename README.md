@@ -98,7 +98,7 @@ Before installing Hydrosphere Monitoring, please install its prerequisites:
 After the chart has been installed, you have to expose the `shell-ui` component outside of the cluster. For the sake of simplicity, we will just port-forward it locally.
 
 ```sh
-k port-forward svc/monitoring-shell-ui 8080:8080 -n hydromonitoring
+kubectl port-forward svc/monitoring-shell-ui 8080:8080 -n hydromonitoring
 ```
 
 Hydro-Monitoring will be available at [localhost:8080](http://localhost:8080/).
