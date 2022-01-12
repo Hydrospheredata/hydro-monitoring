@@ -32,7 +32,7 @@ A helm chart for the service which manages plugins for the entire system
 | global.persistence.url | string | `""` |  |
 | global.persistence.service.ports.api | int | `9000` | Minio api port |
 | global.tolerations | list | `[]` | Tolerations for manager pods |
-| image.full | string | `"hydrosphere/monitoring-manager:5e41a730bea8ae15ea78b1e4c9583d0c47f5634c"` | manager image |
+| image.full | string | `"hydrosphere/monitoring-manager:0a6aa89e3056376a42609933ede9759538c11c29"` | manager image |
 | image.pullPolicy | string | `"IfNotPresent"` | manager image pull policy |
 | containerPorts.http | int | `8080` | manager container http port |
 | containerPorts.grpc | int | `8081` | manager container grpc port |
