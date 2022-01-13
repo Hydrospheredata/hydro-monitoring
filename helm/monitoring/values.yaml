@@ -63,4 +63,5 @@ global:
     
 
   # -- Tolerations for pods in hydro-monitoring
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   tolerations: []

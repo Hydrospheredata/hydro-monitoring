@@ -16,11 +16,8 @@ shell-ui:
   image: 
     full: hydrosphere/shell-ui:46427ff552b32b1f176815b3cfb4da570112c256
 
-opentelemetry-collector:
-  config:
-    exporters:
-      prometheusremotewrite:
-        endpoint: http://kube-prometheus-prometheus:9090/api/v1/write
+otel-collector:
+  prometheusEndpoint: kube-prometheus-prometheus:9090
 
 global:
   ui:

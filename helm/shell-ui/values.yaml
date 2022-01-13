@@ -19,6 +19,7 @@ global:
         http: 8080
 
   # -- Tolerations for shell-ui pods
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   tolerations: []
 
 image:
@@ -45,10 +46,13 @@ securityContext:
 podAnnotations: {}
 
 # -- Map of resources to add to the pods
+## ref: https://kubernetes.io/docs/concepts/policy/resource-quotas/#compute-resource-quota
 resources: {}
 
 # -- Node labels for shell-ui pods assignment
+## ref: https://kubernetes.io/docs/user-guide/node-selection/
 nodeSelector: {}
 
 # -- Affinity for shell-ui pods assignment
+## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
 affinity: {}

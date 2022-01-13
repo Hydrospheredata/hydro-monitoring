@@ -1,0 +1,105 @@
+
+#########################################################################################################################################################################
+# Title: OpenTelemetry Collector Contrib                                                                                                                                #
+# Author: Anoshin, D.                                                                                                                                                   #
+# Date: 2022                                                                                                                                                            #
+# Code version: 0.42.0                                                                                                                                                  #
+# Availability: https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/200a764a8a2d6328945befde110e259c72431725/examples/kubernetes/otel-collector.yaml #
+#########################################################################################################################################################################
+{{- if .Values.global.metrics }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "otel-collector.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "otel-collector.fullname" . }}
+    chart: {{ template "otel-collector.fullname" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app: "{{ template "otel-collector.name" . }}"
+      release: {{ .Release.Name | quote }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        app: {{ template "otel-collector.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+{{- if .Values.global.tolerations }}  
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
+{{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.full }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - "--config=/etc/otel/otel-collector-config.yaml"
+          ports:
+            - name: pprof
+              containerPort: {{ .Values.service.ports.pprof }}
+              protocol: TCP
+            - name: metrics
+              containerPort: {{ .Values.service.ports.metrics }}
+              protocol: TCP
+            - name: export-metrics
+              protocol: TCP
+              containerPort: {{ .Values.service.ports.exporterMetrics }}
+            - name: health-check
+              protocol: TCP
+              containerPort: {{ .Values.service.ports.healthCheck }}
+            - name: grpc
+              protocol: TCP
+              containerPort: {{ .Values.service.ports.grpc }}
+            - name: zpages
+              protocol: TCP
+              containerPort: {{ .Values.service.ports.zpages }}
+          env:
+            - name: PROMETHEUS_ENDPOINT
+              value: http://{{ .Values.prometheusEndpoint }}/api/v1/write
+          volumeMounts:
+            - name: varlogpods
+              mountPath: /var/log/pods
+              readOnly: true
+            - name: varlibdockercontainers
+              mountPath: /var/lib/docker/containers
+              readOnly: true
+            - name: {{ template "otel-collector.fullname" . }}-config
+              mountPath: "/etc/otel/"
+              readOnly: true
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      terminationGracePeriodSeconds: 30
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: varlogpods
+          hostPath:
+            path: /var/log/pods
+        - name: varlibdockercontainers
+          hostPath:
+            path: /var/lib/docker/containers
+        - name: {{ template "otel-collector.fullname" . }}-config
+          configMap:
+            name: {{ template "otel-collector.fullname" . }}-config
+            items:
+              - key: otel-collector-config.yaml
+                path: otel-collector-config.yaml
+{{- end }}

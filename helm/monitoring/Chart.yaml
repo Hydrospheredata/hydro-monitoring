@@ -39,6 +39,6 @@ dependencies:
   - name: profiler
     repository: file://../profiler
     version: "~0.1.0"
-  - name: opentelemetry-collector
-    repository: file://../opentelemetry-collector
-    version: "~0.8.1"
+  - name: otel-collector
+    repository: file://../otel-collector
+    version: "~0.1.0"

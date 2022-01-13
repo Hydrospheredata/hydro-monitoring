@@ -33,6 +33,7 @@ global:
         api: 9000
 
   # -- Tolerations for manager pods
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   tolerations: []
 
 image:
@@ -49,6 +50,7 @@ containerPorts:
   # -- manager container jmx port
   jmx: 5555
 
+## ref: https://kubernetes.io/docs/concepts/policy/resource-quotas/#compute-resource-quota
 resources:
   limits:
     # -- The cpu limit for the container
@@ -73,7 +75,9 @@ podAnnotations:
   prometheus.io/port: "5556"
 
 # -- Node labels for manager pods assignment
+## ref: https://kubernetes.io/docs/user-guide/node-selection/
 nodeSelector: {}
 
 # -- Affinity for manager pods assignment
+## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
 affinity: {}
