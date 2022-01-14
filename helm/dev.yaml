@@ -3,6 +3,17 @@ manager:
     full: hydrosphere/monitoring-manager:0a6aa89e3056376a42609933ede9759538c11c29
   monitoring:
     enabled: true
+  resources:
+    limits:
+      # -- The cpu limit for the container
+      cpu: 1500m
+      # -- The memory limit for the container
+      memory: 2Gi
+    requests:
+      # -- The requested cpu for the container
+      cpu: 500m
+      # -- The requested memory for the container
+      memory: 1Gi
 
 drift-report-plugin:
   image: 
