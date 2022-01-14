@@ -28,7 +28,7 @@ global:
 
 image:
   # -- drift-report-plugin image
-  full: hydrosphere/drift-report-plugin:98b502a4941e82aa2829b1e3e476bf42eca83846
+  full: hydrosphere/drift-report-plugin:39161af784b0ff6cbea5c0c74d93560eca99ccbd
   # -- drift-report-plugin image pull policy
   pullPolicy: IfNotPresent
 
