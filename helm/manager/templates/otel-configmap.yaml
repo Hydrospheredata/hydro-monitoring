@@ -1,12 +1,12 @@
-{{- if .Values.global.metrics }}
+{{- if .Values.exportMetrics.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "otel-collector.fullname" . }}-config
+  name: {{ template "manager.fullname" . }}-otel-config
   namespace: {{ .Release.Namespace }}
   labels:
-    app: {{ template "otel-collector.fullname" . }}
-    chart: {{ template "otel-collector.fullname" . }}
+    app: {{ template "manager.fullname" . }}
+    chart: {{ template "manager.fullname" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:

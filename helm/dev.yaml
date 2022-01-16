@@ -3,6 +3,11 @@ manager:
     full: hydrosphere/monitoring-manager:0a6aa89e3056376a42609933ede9759538c11c29
   monitoring:
     enabled: true
+  exportMetrics:
+    # -- Exporting metrics option to opentelemetry-collector
+    enabled: true
+    # -- Prometheus endpoint within the cluster
+    prometheusEndpoint: monitoring-kube-prometheus-prometheus:9090
   resources:
     limits:
       # -- The cpu limit for the container

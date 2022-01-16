@@ -57,11 +57,14 @@ global:
         http: 8080
         # -- manager service grpc port
         grpc: 8081
-  
-  # -- Enable exporting metrics option to opentelemetry-collector
-  metrics: false
-    
 
   # -- Tolerations for pods in hydro-monitoring
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   tolerations: []
+
+manager:
+  exportMetrics:
+    # -- Exporting metrics option to opentelemetry-collector
+    enabled: false
+    # -- Prometheus endpoint within the cluster
+    prometheusEndpoint: monitoring-kube-prometheus-prometheus:9090

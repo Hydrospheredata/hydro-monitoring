@@ -29,6 +29,33 @@ spec:
       protocol: TCP
       name: jmx-exporter
   {{- end }}
+  {{- if .Values.exportMetrics.enabled }}
+    - port: {{ .Values.exportMetrics.ports.pprof }}
+      targetPort: pprof
+      protocol: TCP
+      name: pprof
+    - port: {{ .Values.exportMetrics.ports.metrics }}
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
+    - port: {{ .Values.exportMetrics.ports.exporterMetrics }}
+      targetPort: export-metrics
+      protocol: TCP
+      name: export-metrics
+    - port: {{ .Values.exportMetrics.ports.healthCheck }}
+      targetPort: health-check
+      protocol: TCP
+      name: health-check
+    - port: {{ .Values.exportMetrics.ports.grpc }}
+      targetPort: otel-grpc
+      protocol: TCP
+      name: otel-grpc
+    - port: {{ .Values.exportMetrics.ports.zpages }}
+      targetPort: zpages
+      protocol: TCP
+      name: zpages
+  {{- end }}
+
   selector:
     app: {{ include "manager.name" . }}
     release: {{ .Release.Name }}

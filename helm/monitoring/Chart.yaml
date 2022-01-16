@@ -39,6 +39,3 @@ dependencies:
   - name: profiler
     repository: file://../profiler
     version: "~0.1.0"
-  - name: otel-collector
-    repository: file://../otel-collector
-    version: "~0.1.0"

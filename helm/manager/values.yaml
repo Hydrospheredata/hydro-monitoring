@@ -67,6 +67,25 @@ monitoring:
   # -- JMX metrics monitoring
   enabled: false
 
+exportMetrics:
+  # -- export metrics
+  enabled: false
+  # -- Prometheus endpoint within the cluster
+  prometheusEndpoint: monitoring-kube-prometheus-prometheus:9090
+  ports:
+    # -- pprof extension port
+    pprof: 1888
+    # -- Prometheus metrics exposed by the collector port
+    metrics: 8888
+    # -- Prometheus exporter metrics port
+    exporterMetrics: 8889
+    # -- health_check extension port
+    healthCheck: 13133
+    # -- OTLP gRPC receiver
+    grpc: 4317
+    # -- zpages extension port
+    zpages: 55679
+
 # -- Map of annotations to add to the pods
 podAnnotations:
   # -- Scrape by prometheus
