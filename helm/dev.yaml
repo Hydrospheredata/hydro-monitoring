@@ -17,7 +17,7 @@ manager:
 
 drift-report-plugin:
   image: 
-    full: hydrosphere/drift-report-plugin:39161af784b0ff6cbea5c0c74d93560eca99ccbd
+    full: hydrosphere/drift-report-plugin:9546de06c61d04a3f0f05744cf2421cd5f07f1a5
 
 profiler:
   image: 
