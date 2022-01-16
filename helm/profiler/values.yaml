@@ -21,7 +21,7 @@ global:
 
 image:
   # -- profiler image
-  full: hydrosphere/profiler:63e8001df93f5defac3994b84995558e040ccae2
+  full: hydrosphere/profiler:73b95e0c6ef0387c9f7af6f77a0ecd730d787f5d
   # -- profiler image pull policy
   pullPolicy: IfNotPresent
 
