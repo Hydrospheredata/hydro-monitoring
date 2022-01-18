@@ -27,7 +27,7 @@ A helm chart for the hydro-monitoring user interface
 | global.ui.ingress.issuer | string | `"letsencrypt-prod"` | A name of the cert-manager issuer name, configured within the cluster |
 | global.manager.service.ports.http | int | `8080` | Manager http port |
 | global.tolerations | list | `[]` | Tolerations for shell-ui pods |
-| image.full | string | `"hydrosphere/shell-ui:b83cbd35ac901aa49dffbe187787de91f96f3c7d"` | shell-ui image |
+| image.full | string | `"hydrosphere/shell-ui:f78818fe136993c83ddc2eef9eacbaef02f1f5b3"` | shell-ui image |
 | image.pullPolicy | string | `"IfNotPresent"` | shell-ui image pull policy |
 | service.type | string | `"ClusterIP"` | Kubernetes Service type |
 | service.port | int | `8080` | shell-ui port |
