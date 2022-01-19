@@ -9,6 +9,14 @@ description: Platform for monitoring your Machine Learning models
 
 ## What to do next?
 
+Visit [tutorials](tutorials/) to get used to the solution.
+
+Visit [how-to's](how-to/) in order to solve particular problems.
+
+Visit [theory](theory/) to learn why we decided to implement the solution, and get some background on problems we solve.
+
+Visit [reference](reference/) to get technical deep dive of the system.
+
 ⭐️ Star [**Hydro-Monitoring repo**](https://github.com/Hydrospheredata/hydro-monitoring) on Github
 
 💦 Explore our [**Getting Started**](quickstart/getting-started.md) tutorial
