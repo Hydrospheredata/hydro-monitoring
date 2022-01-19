@@ -1,6 +1,6 @@
 manager:
   image: 
-    full: hydrosphere/monitoring-manager:0a6aa89e3056376a42609933ede9759538c11c29
+    full: hydrosphere/monitoring-manager:0d14c97054eb6d76d9ab2876f51221231974f92e
   monitoring:
     enabled: true
   exportMetrics:
