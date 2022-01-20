@@ -30,7 +30,7 @@ profiler:
 
 shell-ui:
   image: 
-    full: hydrosphere/shell-ui:3a414cdca0caaee774f89e8363ded3cdc605fac1
+    full: hydrosphere/shell-ui:ca0b617da9d056da5a3d53344e286bb88a16faa2
 
 otel-collector:
   prometheusEndpoint: kube-prometheus-prometheus:9090
