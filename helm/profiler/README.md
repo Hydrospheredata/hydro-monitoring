@@ -25,7 +25,7 @@ A Helm chart for profiler plugin
 | global.persistence.service.ports.api | int | `9000` | Minio api port |
 | global.manager.service.ports.grpc | int | `8081` | Manager grpc port |
 | global.tolerations | list | `[]` | Tolerations for profiler pods |
-| image.full | string | `"hydrosphere/profiler:fd71e25f52e1baefd3aa1b40b40d41c18a76addc"` | profiler image |
+| image.full | string | `"hydrosphere/profiler:bca177f8d71d9d8c93091f9a9fdf9a337582e194"` | profiler image |
 | image.pullPolicy | string | `"IfNotPresent"` | profiler image pull policy |
 | service.type | string | `"ClusterIP"` | Kubernetes Service type |
 | service.port | int | `5001` | profiler port |
